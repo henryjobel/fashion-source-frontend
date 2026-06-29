@@ -81,7 +81,7 @@ function Products() {
         <div className="mx-auto max-w-6xl">
           <p className="text-center text-lg text-neutral-600 max-w-3xl mx-auto mb-12">{cat.intro}</p>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cat.items.map((it) => (
+            {cat.items.map((it: { name: string; desc: string }) => (
               <article key={it.name} className="bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-md transition">
                 <div className="h-1 w-10 bg-[var(--brand-green)] mb-4" />
                 <h3 className="font-black text-[var(--brand-blue)] mb-2">{it.name}</h3>
