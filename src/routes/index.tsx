@@ -1,11 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  Facebook,
-  Youtube,
-  Instagram,
-  Linkedin,
-  Phone,
   MapPin,
   Cog,
   Monitor,
@@ -30,15 +25,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const navItems = [
-  "Our Company",
-  "Our Products",
-  "Our Services",
-  "Our Contact",
-  "Become Supplier",
-  "FAQ",
-];
 
 const services = [
   { icon: Cog, title: "RESEARCH", color: "var(--col-research)", text: "We do research on new styles, new fabric, accessories and trims on a regular basis. We strive to develop them accordingly from home and abroad." },
