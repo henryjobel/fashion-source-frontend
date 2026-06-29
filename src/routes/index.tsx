@@ -9,6 +9,7 @@ import {
   CalendarCheck,
   Users,
   Building2,
+  MapPin,
   ChevronUp,
 } from "lucide-react";
 import heroImg from "@/assets/hero-garments.jpg";
