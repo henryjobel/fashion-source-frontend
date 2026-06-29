@@ -141,45 +141,6 @@ function Index() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-neutral-800 text-neutral-200">
-        <div className="mx-auto max-w-7xl px-4 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
-          {footerCols.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-white font-black tracking-wider mb-4">{col.title}</h4>
-              <ul className="space-y-2 text-sm">
-                {col.links.map((l) => (
-                  <li key={l} className="border-b border-neutral-700 pb-2">
-                    <a href="#" className="hover:text-[var(--brand-green)]">{l}</a>
-                  </li>
-                ))}
-              </ul>
-              {col.extraTitle && (
-                <>
-                  <h4 className="text-white font-black tracking-wider mt-8 mb-4">{col.extraTitle}</h4>
-                  <ul className="space-y-2 text-sm">
-                    {col.extraLinks!.map((l) => (
-                      <li key={l} className="border-b border-neutral-700 pb-2">
-                        <a href="#" className="hover:text-[var(--brand-green)]">{l}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-neutral-700">
-          <div className="mx-auto max-w-7xl px-4 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-400">
-            <div>Copyrights 1998 – 2025 © NAFISA INT'L TRADING (BD) LTD.</div>
-            <div className="flex items-center gap-2">
-              <span>A SUBSIDIARY OF</span>
-              <span className="text-[var(--brand-green)] font-black tracking-wider">JANN GROUP</span>
-            </div>
-          </div>
-        </div>
-      </footer>
-
       {showTop && (
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top" className="fixed bottom-6 right-6 w-11 h-11 rounded-full bg-[var(--brand-green)] text-white flex items-center justify-center shadow-lg hover:opacity-90">
           <ChevronUp className="w-5 h-5" />
