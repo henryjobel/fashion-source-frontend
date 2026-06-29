@@ -69,8 +69,15 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.208 0.042 265.755);
-  --primary-foreground: oklch(0.984 0.003 247.858);
+  --primary: oklch(0.72 0.17 152);
+  --primary-foreground: oklch(0.99 0 0);
+  --brand-blue: oklch(0.45 0.13 248);
+  --brand-green: oklch(0.72 0.17 152);
+  --col-research: oklch(0.18 0 0);
+  --col-design: oklch(0.74 0.17 55);
+  --col-sourcing: oklch(0.68 0.18 145);
+  --col-production: oklch(0.55 0.21 27);
+  --col-logistics: oklch(0.52 0.19 255);
   --secondary: oklch(0.968 0.007 247.896);
   --secondary-foreground: oklch(0.208 0.042 265.755);
   --muted: oklch(0.968 0.007 247.896);
