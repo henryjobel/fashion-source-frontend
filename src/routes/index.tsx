@@ -1,12 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  Facebook,
-  Youtube,
-  Instagram,
-  Linkedin,
-  Phone,
-  MapPin,
   Cog,
   Monitor,
   Globe,
@@ -15,6 +9,7 @@ import {
   CalendarCheck,
   Users,
   Building2,
+  MapPin,
   ChevronUp,
 } from "lucide-react";
 import heroImg from "@/assets/hero-garments.jpg";
@@ -30,15 +25,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
-const navItems = [
-  "Our Company",
-  "Our Products",
-  "Our Services",
-  "Our Contact",
-  "Become Supplier",
-  "FAQ",
-];
 
 const services = [
   { icon: Cog, title: "RESEARCH", color: "var(--col-research)", text: "We do research on new styles, new fabric, accessories and trims on a regular basis. We strive to develop them accordingly from home and abroad." },
@@ -65,13 +51,6 @@ const productBars = [
   { name: "WORK-WEAR", pct: 6, color: "#5b3a36" },
 ];
 
-const footerCols = [
-  { title: "KNIT", links: ["Men's", "Ladies", "Kids", "Fleece", "Babies", "Baby Rompers", "Lingerie", "Underwear"] },
-  { title: "WOVEN", links: ["Shirts", "Ladies Woven Tops, Dress", "Woven Bottom", "Cargo Shorts", "Swimming Wear", "Jacket", "Nightwear", "Workwear", "Blazer"] },
-  { title: "FLAT KNIT", links: ["Flat Knit Sweater"], extraTitle: "OTHERS", extraLinks: ["Cap", "Bed Sheet", "Towel"] },
-  { title: "COMPANY", links: ["Our Services", "About Us", "Compliance", "Why Work With Us", "Our Culture", "Key Contacts", "Career Opportunities", "Contact"] },
-];
-
 function Index() {
   const [showTop, setShowTop] = useState(false);
   useEffect(() => {
@@ -82,54 +61,6 @@ function Index() {
 
   return (
     <div className="min-h-screen bg-white text-neutral-800 font-sans">
-      {/* Top contact bar */}
-      <div className="bg-[var(--brand-green)] text-white text-xs">
-        <div className="mx-auto max-w-7xl px-4 py-2 flex flex-wrap items-center justify-between gap-2">
-          <div className="flex items-center gap-3">
-            {[Facebook, Youtube, Instagram, Linkedin].map((Icon, i) => (
-              <a key={i} href="#" className="hover:opacity-80" aria-label="social">
-                <Icon className="w-4 h-4" />
-              </a>
-            ))}
-            <span className="mx-2 inline-flex items-center gap-1.5">
-              <Phone className="w-3.5 h-3.5" /> +880-9606-333222
-            </span>
-          </div>
-          <div className="inline-flex items-center gap-1.5">
-            <MapPin className="w-3.5 h-3.5" /> Plot # 08, Road # 1/A, Gulshan-1, Dhaka-1212, Bangladesh
-          </div>
-        </div>
-      </div>
-
-      {/* Header */}
-      <header className="border-b border-neutral-200 bg-white sticky top-0 z-40">
-        <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between gap-6">
-          <a href="#" className="flex items-center gap-3">
-            <div className="relative">
-              <div className="w-12 h-12 rounded-md flex items-center justify-center" style={{ background: "linear-gradient(135deg,var(--brand-blue) 50%,var(--brand-green) 50%)" }}>
-                <span className="text-white font-black text-lg tracking-tight">N</span>
-              </div>
-              <span className="absolute -top-1 -right-2 text-[9px] text-neutral-500">TM</span>
-            </div>
-            <div className="leading-tight">
-              <div className="font-black tracking-tight text-[var(--brand-blue)] text-lg">
-                NAFISA INT'L TRADING (BD) LTD.
-              </div>
-              <div className="text-[11px] text-neutral-500">
-                (100% Export Oriented Garments Buying House)
-              </div>
-            </div>
-          </a>
-          <nav className="hidden lg:flex items-center gap-7 text-sm font-semibold tracking-wide">
-            {navItems.map((n) => (
-              <a key={n} href="#" className="text-neutral-700 hover:text-[var(--brand-green)] uppercase">
-                {n}
-              </a>
-            ))}
-          </nav>
-        </div>
-      </header>
-
       {/* Hero */}
       <section className="relative h-[60vh] min-h-[420px] w-full overflow-hidden">
         <img src={heroImg} alt="Garments showroom" className="absolute inset-0 w-full h-full object-cover" />
@@ -202,45 +133,6 @@ function Index() {
           </div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="bg-neutral-800 text-neutral-200">
-        <div className="mx-auto max-w-7xl px-4 py-16 grid grid-cols-2 md:grid-cols-4 gap-10">
-          {footerCols.map((col) => (
-            <div key={col.title}>
-              <h4 className="text-white font-black tracking-wider mb-4">{col.title}</h4>
-              <ul className="space-y-2 text-sm">
-                {col.links.map((l) => (
-                  <li key={l} className="border-b border-neutral-700 pb-2">
-                    <a href="#" className="hover:text-[var(--brand-green)]">{l}</a>
-                  </li>
-                ))}
-              </ul>
-              {col.extraTitle && (
-                <>
-                  <h4 className="text-white font-black tracking-wider mt-8 mb-4">{col.extraTitle}</h4>
-                  <ul className="space-y-2 text-sm">
-                    {col.extraLinks!.map((l) => (
-                      <li key={l} className="border-b border-neutral-700 pb-2">
-                        <a href="#" className="hover:text-[var(--brand-green)]">{l}</a>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              )}
-            </div>
-          ))}
-        </div>
-        <div className="border-t border-neutral-700">
-          <div className="mx-auto max-w-7xl px-4 py-5 flex flex-wrap items-center justify-between gap-3 text-xs text-neutral-400">
-            <div>Copyrights 1998 – 2025 © NAFISA INT'L TRADING (BD) LTD.</div>
-            <div className="flex items-center gap-2">
-              <span>A SUBSIDIARY OF</span>
-              <span className="text-[var(--brand-green)] font-black tracking-wider">JANN GROUP</span>
-            </div>
-          </div>
-        </div>
-      </footer>
 
       {showTop && (
         <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} aria-label="Back to top" className="fixed bottom-6 right-6 w-11 h-11 rounded-full bg-[var(--brand-green)] text-white flex items-center justify-center shadow-lg hover:opacity-90">

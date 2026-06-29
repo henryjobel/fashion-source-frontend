@@ -9,38 +9,275 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WhyWorkWithUsRouteImport } from './routes/why-work-with-us'
+import { Route as ServicesRouteImport } from './routes/services'
+import { Route as OurCultureRouteImport } from './routes/our-culture'
+import { Route as KeyContactsRouteImport } from './routes/key-contacts'
+import { Route as JobOpeningsRouteImport } from './routes/job-openings'
+import { Route as FaqRouteImport } from './routes/faq'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ConcernRouteImport } from './routes/concern'
+import { Route as ComplianceRouteImport } from './routes/compliance'
+import { Route as BecomeSupplierRouteImport } from './routes/become-supplier'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ProductsCategoryRouteImport } from './routes/products.$category'
 
+const WhyWorkWithUsRoute = WhyWorkWithUsRouteImport.update({
+  id: '/why-work-with-us',
+  path: '/why-work-with-us',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicesRoute = ServicesRouteImport.update({
+  id: '/services',
+  path: '/services',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OurCultureRoute = OurCultureRouteImport.update({
+  id: '/our-culture',
+  path: '/our-culture',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const KeyContactsRoute = KeyContactsRouteImport.update({
+  id: '/key-contacts',
+  path: '/key-contacts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const JobOpeningsRoute = JobOpeningsRouteImport.update({
+  id: '/job-openings',
+  path: '/job-openings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FaqRoute = FaqRouteImport.update({
+  id: '/faq',
+  path: '/faq',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConcernRoute = ConcernRouteImport.update({
+  id: '/concern',
+  path: '/concern',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ComplianceRoute = ComplianceRouteImport.update({
+  id: '/compliance',
+  path: '/compliance',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BecomeSupplierRoute = BecomeSupplierRouteImport.update({
+  id: '/become-supplier',
+  path: '/become-supplier',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProductsCategoryRoute = ProductsCategoryRouteImport.update({
+  id: '/products/$category',
+  path: '/products/$category',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/become-supplier': typeof BecomeSupplierRoute
+  '/compliance': typeof ComplianceRoute
+  '/concern': typeof ConcernRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/job-openings': typeof JobOpeningsRoute
+  '/key-contacts': typeof KeyContactsRoute
+  '/our-culture': typeof OurCultureRoute
+  '/services': typeof ServicesRoute
+  '/why-work-with-us': typeof WhyWorkWithUsRoute
+  '/products/$category': typeof ProductsCategoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/become-supplier': typeof BecomeSupplierRoute
+  '/compliance': typeof ComplianceRoute
+  '/concern': typeof ConcernRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/job-openings': typeof JobOpeningsRoute
+  '/key-contacts': typeof KeyContactsRoute
+  '/our-culture': typeof OurCultureRoute
+  '/services': typeof ServicesRoute
+  '/why-work-with-us': typeof WhyWorkWithUsRoute
+  '/products/$category': typeof ProductsCategoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/become-supplier': typeof BecomeSupplierRoute
+  '/compliance': typeof ComplianceRoute
+  '/concern': typeof ConcernRoute
+  '/contact': typeof ContactRoute
+  '/faq': typeof FaqRoute
+  '/job-openings': typeof JobOpeningsRoute
+  '/key-contacts': typeof KeyContactsRoute
+  '/our-culture': typeof OurCultureRoute
+  '/services': typeof ServicesRoute
+  '/why-work-with-us': typeof WhyWorkWithUsRoute
+  '/products/$category': typeof ProductsCategoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/about'
+    | '/become-supplier'
+    | '/compliance'
+    | '/concern'
+    | '/contact'
+    | '/faq'
+    | '/job-openings'
+    | '/key-contacts'
+    | '/our-culture'
+    | '/services'
+    | '/why-work-with-us'
+    | '/products/$category'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/about'
+    | '/become-supplier'
+    | '/compliance'
+    | '/concern'
+    | '/contact'
+    | '/faq'
+    | '/job-openings'
+    | '/key-contacts'
+    | '/our-culture'
+    | '/services'
+    | '/why-work-with-us'
+    | '/products/$category'
+  id:
+    | '__root__'
+    | '/'
+    | '/about'
+    | '/become-supplier'
+    | '/compliance'
+    | '/concern'
+    | '/contact'
+    | '/faq'
+    | '/job-openings'
+    | '/key-contacts'
+    | '/our-culture'
+    | '/services'
+    | '/why-work-with-us'
+    | '/products/$category'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  BecomeSupplierRoute: typeof BecomeSupplierRoute
+  ComplianceRoute: typeof ComplianceRoute
+  ConcernRoute: typeof ConcernRoute
+  ContactRoute: typeof ContactRoute
+  FaqRoute: typeof FaqRoute
+  JobOpeningsRoute: typeof JobOpeningsRoute
+  KeyContactsRoute: typeof KeyContactsRoute
+  OurCultureRoute: typeof OurCultureRoute
+  ServicesRoute: typeof ServicesRoute
+  WhyWorkWithUsRoute: typeof WhyWorkWithUsRoute
+  ProductsCategoryRoute: typeof ProductsCategoryRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/why-work-with-us': {
+      id: '/why-work-with-us'
+      path: '/why-work-with-us'
+      fullPath: '/why-work-with-us'
+      preLoaderRoute: typeof WhyWorkWithUsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/services': {
+      id: '/services'
+      path: '/services'
+      fullPath: '/services'
+      preLoaderRoute: typeof ServicesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/our-culture': {
+      id: '/our-culture'
+      path: '/our-culture'
+      fullPath: '/our-culture'
+      preLoaderRoute: typeof OurCultureRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/key-contacts': {
+      id: '/key-contacts'
+      path: '/key-contacts'
+      fullPath: '/key-contacts'
+      preLoaderRoute: typeof KeyContactsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/job-openings': {
+      id: '/job-openings'
+      path: '/job-openings'
+      fullPath: '/job-openings'
+      preLoaderRoute: typeof JobOpeningsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/faq': {
+      id: '/faq'
+      path: '/faq'
+      fullPath: '/faq'
+      preLoaderRoute: typeof FaqRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/concern': {
+      id: '/concern'
+      path: '/concern'
+      fullPath: '/concern'
+      preLoaderRoute: typeof ConcernRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compliance': {
+      id: '/compliance'
+      path: '/compliance'
+      fullPath: '/compliance'
+      preLoaderRoute: typeof ComplianceRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/become-supplier': {
+      id: '/become-supplier'
+      path: '/become-supplier'
+      fullPath: '/become-supplier'
+      preLoaderRoute: typeof BecomeSupplierRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +285,30 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/products/$category': {
+      id: '/products/$category'
+      path: '/products/$category'
+      fullPath: '/products/$category'
+      preLoaderRoute: typeof ProductsCategoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  BecomeSupplierRoute: BecomeSupplierRoute,
+  ComplianceRoute: ComplianceRoute,
+  ConcernRoute: ConcernRoute,
+  ContactRoute: ContactRoute,
+  FaqRoute: FaqRoute,
+  JobOpeningsRoute: JobOpeningsRoute,
+  KeyContactsRoute: KeyContactsRoute,
+  OurCultureRoute: OurCultureRoute,
+  ServicesRoute: ServicesRoute,
+  WhyWorkWithUsRoute: WhyWorkWithUsRoute,
+  ProductsCategoryRoute: ProductsCategoryRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
