@@ -1,7 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 import {
-  MapPin,
   Cog,
   Monitor,
   Globe,
@@ -49,13 +48,6 @@ const productBars = [
   { name: "JACKET / OUTWEAR", pct: 15, color: "#6fa18b" },
   { name: "HOME TEXTILE", pct: 4, color: "#4ea3a3" },
   { name: "WORK-WEAR", pct: 6, color: "#5b3a36" },
-];
-
-const footerCols = [
-  { title: "KNIT", links: ["Men's", "Ladies", "Kids", "Fleece", "Babies", "Baby Rompers", "Lingerie", "Underwear"] },
-  { title: "WOVEN", links: ["Shirts", "Ladies Woven Tops, Dress", "Woven Bottom", "Cargo Shorts", "Swimming Wear", "Jacket", "Nightwear", "Workwear", "Blazer"] },
-  { title: "FLAT KNIT", links: ["Flat Knit Sweater"], extraTitle: "OTHERS", extraLinks: ["Cap", "Bed Sheet", "Towel"] },
-  { title: "COMPANY", links: ["Our Services", "About Us", "Compliance", "Why Work With Us", "Our Culture", "Key Contacts", "Career Opportunities", "Contact"] },
 ];
 
 function Index() {
