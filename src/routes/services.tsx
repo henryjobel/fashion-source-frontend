@@ -1,46 +1,193 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
-import { CheckSquare, FileText, ShieldCheck, BarChart3, Ship, DollarSign, Sparkles } from "lucide-react";
+import {
+  BarChart3,
+  CheckSquare,
+  DollarSign,
+  FileText,
+  ShieldCheck,
+  Ship,
+  Sparkles,
+} from "lucide-react";
+import { RevealGroup } from "@/components/premium/motion";
+import { SectionEyebrow, SectionHeading } from "@/components/premium/ui";
+import { getField, useCmsPage } from "@/lib/cms";
 
 export const Route = createFileRoute("/services")({
   head: () => ({
     meta: [
-      { title: "Our Services — Nafisa Int'l Trading (BD) Ltd." },
-      { name: "description", content: "Vendor selection, sampling, total quality management, status reporting, shipping coordination, pricing and more." },
-      { property: "og:title", content: "Services — Nafisa Int'l Trading (BD) Ltd." },
-      { property: "og:description", content: "Full-service buying house — from trustworthy vendors and TQM to logistics and ERP transparency." },
+      { title: "Our Services - Fashion Source BD" },
+      {
+        name: "description",
+        content:
+          "Vendor selection, sampling, quality management, status reporting, shipping coordination and pricing support.",
+      },
     ],
   }),
   component: Services,
 });
 
-const items = [
-  { icon: CheckSquare, title: "Selection of Vendors", body: "We assess factories on product range, quality, capacity, facilities, financial capability, technology, manpower, working conditions, managerial efficiency and quality policy. After initial assessment we exchange information with our principals and approve selected vendors." },
-  { icon: FileText, title: "Sampling", body: "We provide samples developed to incorporate colors, fabrics and styles based on buyer requirements. We manufacture sample quantities as required — sharpening the marketing efforts of our buyers in their regions." },
-  { icon: ShieldCheck, title: "Total Quality Management", body: "We closely monitor orders from sampling to shipment. A pro-active approach is maintained towards identifying problems and applying corrective measures. Physical inspection covers design, shrinkage, accessories, appearance, color, labeling, material, assortments, workmanship, measurements and packaging." },
-  { icon: BarChart3, title: "Status Reporting", body: "Status reports based on multi-stage inspection are transmitted to buyers. Production progress is analyzed against delivery terms and suitable course of action is taken to ensure on-time delivery." },
-  { icon: Ship, title: "Shipping Coordination", body: "Shipping documents are checked as per the buyer's instruction and copies are sent in advance of the shipment to avoid any discrepancies." },
-  { icon: DollarSign, title: "Price", body: "We scrutinize prices quoted by factories and other suppliers and combine that with our own experience of the local cost structure to obtain the most realistic prices." },
-  { icon: Sparkles, title: "Other Services", body: "We keep buyers informed about market trends, new developments in the industry, changes in government policy and regulations, as well as new fabrics, designs and fashion trends." },
-];
+const iconsByTitle = [
+  CheckSquare,
+  FileText,
+  ShieldCheck,
+  BarChart3,
+  Ship,
+  DollarSign,
+  Sparkles,
+] as const;
 
 function Services() {
+  const page = useCmsPage("/services");
+  const modelHeading = getField(
+    page,
+    "service-model",
+    "heading",
+    "Built for buyers who need reliable execution, not loose promises.",
+  );
+  const modelBody = getField(
+    page,
+    "service-model",
+    "body",
+    "Fashion Source BD manages practical sourcing work across vendor selection, sampling, quality follow-up, commercial support and shipment coordination. Each step is handled with clear accountability so buyers can make faster decisions.",
+  );
+
+  const flow = [
+    getField(page, "service-flow", "step1", "Research"),
+    getField(page, "service-flow", "step2", "Development"),
+    getField(page, "service-flow", "step3", "Sourcing"),
+    getField(page, "service-flow", "step4", "Production"),
+    getField(page, "service-flow", "step5", "Inspection"),
+    getField(page, "service-flow", "step6", "Shipment"),
+    getField(page, "service-flow", "step7", "Sampling"),
+  ];
+
+  const items = [
+    [
+      getField(page, "service-cards", "vendorTitle", "Selection of Vendors"),
+      iconsByTitle[0],
+      getField(
+        page,
+        "service-cards",
+        "vendor",
+        "Factory assessment, capability review and vendor approval coordination.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "samplingTitle", "Sampling"),
+      iconsByTitle[1],
+      getField(
+        page,
+        "service-cards",
+        "sampling",
+        "Buyer-led sample development across fabrics, colors, trims, fits and seasonal directions.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "qualityTitle", "Total Quality Management"),
+      iconsByTitle[2],
+      getField(
+        page,
+        "service-cards",
+        "quality",
+        "Inspection, corrective action, measurement control, workmanship and packaging checks.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "statusTitle", "Status Reporting"),
+      iconsByTitle[3],
+      getField(
+        page,
+        "service-cards",
+        "status",
+        "Multi-stage order updates, production tracking and delivery risk visibility.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "shippingTitle", "Shipping Coordination"),
+      iconsByTitle[4],
+      getField(
+        page,
+        "service-cards",
+        "shipping",
+        "Document review, shipment follow-up and communication with buyer instructions.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "priceTitle", "Price"),
+      iconsByTitle[5],
+      getField(
+        page,
+        "service-cards",
+        "price",
+        "Factory quotation review with practical market and local cost-structure understanding.",
+      ),
+    ],
+    [
+      getField(page, "service-cards", "otherTitle", "Other Services"),
+      iconsByTitle[6],
+      getField(
+        page,
+        "service-cards",
+        "other",
+        "Market trend, new material, regulation and fashion development information.",
+      ),
+    ],
+  ] as const;
+
   return (
     <>
-      <PageHero subtitle="OUR SERVICES" title="Trustworthy vendors, TQM, sampling, logistics and full ERP transparency." breadcrumb="Nafisa Int'l Trading (BD) Ltd. / Our Services" />
-      <section className="py-16 px-4">
-        <div className="mx-auto max-w-6xl grid md:grid-cols-2 gap-6">
-          {items.map(({ icon: Icon, title, body }) => (
-            <article key={title} className="bg-white border border-neutral-200 rounded-lg p-7 hover:shadow-md transition">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-11 h-11 rounded-md bg-[var(--brand-green)]/10 flex items-center justify-center">
-                  <Icon className="w-6 h-6 text-[var(--brand-green)]" />
+      <PageHero
+        subtitle="OUR SERVICES"
+        title="A structured sourcing workflow from concept to shipment."
+        breadcrumb="Fashion Source BD / Our Services"
+      />
+      <section className="bg-white px-6 py-20 sm:px-8">
+        <div className="mx-auto max-w-7xl">
+          <div className="grid gap-10 lg:grid-cols-[0.85fr_1.15fr] lg:items-end">
+            <div>
+              <SectionEyebrow>Service Model</SectionEyebrow>
+              <SectionHeading className="mt-4">{modelHeading}</SectionHeading>
+            </div>
+            <p className="text-sm leading-7 text-neutral-600">{modelBody}</p>
+          </div>
+
+          <RevealGroup className="mt-14 grid gap-4 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-7" stagger={0.06}>
+            {flow.map((step, index) => (
+              <div
+                key={step}
+                className="rounded-[var(--radius-premium)] border border-neutral-200 bg-neutral-50 p-5"
+              >
+                <div className="font-display text-xs font-bold text-[var(--brand-primary)]">
+                  {String(index + 1).padStart(2, "0")}
                 </div>
-                <h3 className="font-black text-lg text-[var(--brand-blue)]">{title}</h3>
+                <div className="mt-3 text-sm font-bold text-neutral-900">{step}</div>
               </div>
-              <p className="text-sm text-neutral-600 leading-relaxed">{body}</p>
-            </article>
-          ))}
+            ))}
+          </RevealGroup>
+
+          <RevealGroup className="mt-14 grid gap-5 md:grid-cols-2" stagger={0.08}>
+            {items.map(([title, Icon, body], index) => (
+              <article
+                key={title}
+                className={`group rounded-[var(--radius-premium)] border border-neutral-200 bg-white p-7 shadow-sm transition duration-500 hover:-translate-y-1.5 hover:border-transparent hover:shadow-[0_30px_70px_-24px_rgba(16,20,24,0.28)] ${
+                  index === 2 ? "md:row-span-2" : ""
+                }`}
+              >
+                <div className="flex items-start gap-4">
+                  <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-[var(--brand-primary)]/10 transition-colors duration-300 group-hover:bg-[var(--brand-primary)]">
+                    <Icon className="h-6 w-6 text-[var(--brand-primary)] transition-colors duration-300 group-hover:text-white" />
+                  </div>
+                  <div>
+                    <h3 className="font-display text-lg font-semibold text-[var(--brand-dark)]">
+                      {title}
+                    </h3>
+                    <p className="mt-3 text-sm leading-7 text-neutral-600">{body}</p>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </RevealGroup>
         </div>
       </section>
     </>

@@ -1,106 +1,172 @@
-import { createFileRoute, notFound, Link } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Search } from "lucide-react";
+import { useMemo, useState } from "react";
+
 import { PageHero } from "@/components/page-hero";
-
-type Cat = { title: string; intro: string; items: { name: string; desc: string }[] };
-
-const catalog: Record<string, Cat> = {
-  knit: {
-    title: "Knit",
-    intro: "Full range of knit garments — from soft cotton tees to performance fleece — produced under our compliant supply chain.",
-    items: [
-      { name: "Men's T-Shirt, Polo, Tank Top", desc: "Crew, V-neck, Henley, classic polo, athletic tank — multiple fabric weights and finishes." },
-      { name: "Ladies T-Shirt, Tank Top, Nightwear", desc: "Fashion fits, modal blends, soft-touch finishes for sleep and loungewear." },
-      { name: "Kids T-Shirt, Dress, Jogging Top, Jogging Pant", desc: "Comfortable kids' essentials in age-appropriate fits with OEKO-TEX certified fabrics." },
-      { name: "Fleece — Sweatshirt, Bonded Jacket, Polar & Micro Fleece", desc: "Brushed back fleece, bonded fleece jackets, polar fleece pullovers and micro-fleece base layers." },
-      { name: "Babies T-Shirt", desc: "GOTS-certified organic cotton options available for infant wear." },
-      { name: "Babies Romper", desc: "Snap-front rompers, sleepers and bodysuits with safe trims and snaps." },
-      { name: "Ladies Bra, Bikini & Swimwear", desc: "Knit lingerie and swim styles with technical fabric options." },
-      { name: "Underwear — Boxer, Brief, Panty, Hipster, Thong", desc: "Cotton, modal and cotton/elastane blends across men's and women's silhouettes." },
-    ],
-  },
-  woven: {
-    title: "Woven",
-    intro: "Woven shirts, bottoms, outerwear and workwear from compliant factories with strong technical capability.",
-    items: [
-      { name: "Shirts", desc: "Casual, formal and overshirt styles in cotton, linen and blends." },
-      { name: "Ladies Woven Tops & Dresses", desc: "Blouses, tunics, midi and maxi dresses with embroidery / print options." },
-      { name: "Woven Bottom", desc: "Chinos, dress pants, joggers and tailored trousers." },
-      { name: "Cargo & Shorts", desc: "Utility cargo pants and casual shorts in multiple cuts." },
-      { name: "Swimming Wear & Denim Shorts", desc: "Quick-dry swim shorts and lightweight denim shorts." },
-      { name: "Jacket — Padding, Twill, Windbreaker, Parka, Bomber", desc: "Insulated and shell jackets across seasons with technical linings." },
-      { name: "Nightwear", desc: "Woven pajamas and lounge sets in cotton and viscose." },
-      { name: "Workwear", desc: "Durable workwear meeting safety, abrasion and reinforcement standards." },
-      { name: "Blazer", desc: "Casual and structured blazers in wool blends and cotton." },
-    ],
-  },
-  "flat-knit": {
-    title: "Flat Knit",
-    intro: "Flat knit sweaters from 3gg to 14gg in cotton, wool, acrylic and blended yarns.",
-    items: [
-      { name: "Flat Knit Sweater", desc: "Crew, V-neck, cardigan, half-zip, jacquard, intarsia and cable patterns — 3gg to 14gg." },
-    ],
-  },
-  others: {
-    title: "Others",
-    intro: "Accessories and home textile items — capable of complete-package supply alongside apparel.",
-    items: [
-      { name: "Cap", desc: "Five-panel, six-panel, dad caps and trucker caps with embroidery / print." },
-      { name: "Bed Sheet", desc: "Cotton percale and sateen bedsheet sets in solid and printed options." },
-      { name: "Towel", desc: "Bath, hand and beach towels in multiple weights and constructions." },
-    ],
-  },
-};
+import { RevealGroup } from "@/components/premium/motion";
+import { getCategory, getProductsByCategory, productCategories } from "@/lib/products";
+import { useProducts, useCategories } from "@/lib/queries";
 
 export const Route = createFileRoute("/products/$category")({
   head: ({ params }) => {
-    const c = catalog[params.category];
-    const t = c ? `${c.title} — Nafisa Int'l Trading (BD) Ltd.` : "Products — Nafisa Int'l Trading (BD) Ltd.";
-    const d = c?.intro ?? "Product categories at Nafisa BD.";
+    const category = getCategory(params.category);
+    const title = category
+      ? `${category.title} Products - Fashion Source BD`
+      : "Products - Fashion Source BD";
+    const description = category?.intro ?? "Product categories at Fashion Source BD.";
+
     return {
       meta: [
-        { title: t },
-        { name: "description", content: d },
-        { property: "og:title", content: t },
-        { property: "og:description", content: d },
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
       ],
     };
   },
   loader: ({ params }) => {
-    if (!catalog[params.category]) throw notFound();
-    return { cat: catalog[params.category] };
+    // Static data is only a fallback; admin/API categories can add new slugs.
+    const category = getCategory(params.category);
+    return {
+      staticCategory: category,
+      staticProducts: getProductsByCategory(params.category),
+    };
   },
-  component: Products,
+  component: ProductsCategory,
 });
 
-function Products() {
-  const { cat } = Route.useLoaderData();
+function ProductsCategory() {
+  const { staticCategory, staticProducts } = Route.useLoaderData();
+  const { params } = Route.useMatch();
+  const [query, setQuery] = useState("");
+
+  const { data: apiProducts } = useProducts();
+  const { data: apiCategories } = useCategories();
+
+  // Prefer API data, fall back to static
+  const allCategories = apiCategories && apiCategories.length > 0 ? apiCategories : productCategories;
+  const category = allCategories.find((c) => c.slug === params.category) ??
+    staticCategory ?? {
+      slug: params.category,
+      title: params.category
+        .split("-")
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+        .join(" "),
+      intro: "",
+      description: "Products in this category will appear here after they are uploaded.",
+    };
+
+  const allProducts = useMemo(() => {
+    if (apiProducts && apiProducts.length > 0) {
+      return apiProducts
+        .filter((p) => p.category_slug === params.category)
+        .map((p) => ({
+          slug: p.slug,
+          name: p.name,
+          shortName: p.short_name,
+          image: p.image_url,
+        }));
+    }
+    return staticProducts.map((p) => ({
+      slug: p.slug,
+      name: p.name,
+      shortName: p.shortName,
+      image: p.image,
+    }));
+  }, [apiProducts, staticProducts, params.category]);
+
+  const filtered = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return allProducts;
+    return allProducts.filter((p) => p.name.toLowerCase().includes(needle));
+  }, [allProducts, query]);
+
   return (
-    <>
-      <PageHero subtitle="OUR PRODUCTS" title={cat.title} breadcrumb={`Nafisa Int'l Trading (BD) Ltd. / Products / ${cat.title}`} />
-      <section className="py-16 px-4">
-        <div className="mx-auto max-w-6xl">
-          <p className="text-center text-lg text-neutral-600 max-w-3xl mx-auto mb-12">{cat.intro}</p>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {cat.items.map((it: { name: string; desc: string }) => (
-              <article key={it.name} className="bg-white border border-neutral-200 rounded-lg p-6 hover:shadow-md transition">
-                <div className="h-1 w-10 bg-[var(--brand-green)] mb-4" />
-                <h3 className="font-black text-[var(--brand-blue)] mb-2">{it.name}</h3>
-                <p className="text-sm text-neutral-600 leading-relaxed">{it.desc}</p>
-              </article>
-            ))}
-          </div>
-          <div className="mt-14 text-center">
-            <div className="text-sm text-neutral-500 mb-3">Browse other categories</div>
-            <div className="flex flex-wrap justify-center gap-3">
-              {Object.entries(catalog).map(([slug, c]) => (
-                <Link key={slug} to="/products/$category" params={{ category: slug }} className="px-4 py-2 rounded-full border border-neutral-300 text-sm font-semibold text-neutral-700 hover:border-[var(--brand-green)] hover:text-[var(--brand-green)]">
-                  {c.title}
-                </Link>
-              ))}
-            </div>
+    <section className="bg-white">
+      <PageHero
+        subtitle="Our Products"
+        title={category.title}
+        breadcrumb={`Home / Products / ${category.title}`}
+      />
+
+      <div className="mx-auto max-w-7xl px-6 py-16 sm:px-8">
+        <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+          <p className="max-w-3xl text-sm leading-7 text-neutral-600">{category.description}</p>
+          <Link
+            to="/products"
+            className="inline-flex items-center justify-center rounded-full border border-neutral-300 px-5 py-2.5 text-sm font-bold text-neutral-700 transition hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]"
+          >
+            View All Products
+          </Link>
+        </div>
+
+        <div className="mb-6 flex overflow-hidden rounded-full border border-neutral-200 bg-white">
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            aria-label="Search products"
+            placeholder="Search products…"
+            className="min-h-12 flex-1 px-5 text-sm outline-none placeholder:text-neutral-400"
+          />
+          <div className="flex w-14 items-center justify-center text-neutral-400">
+            <Search className="h-4 w-4" />
           </div>
         </div>
-      </section>
-    </>
+
+        <div className="mb-10 flex flex-wrap gap-2">
+          {allCategories.map((item) => (
+            <Link
+              key={item.slug}
+              to="/products/$category"
+              params={{ category: item.slug }}
+              className={`rounded-full border px-4 py-2 text-xs font-bold uppercase tracking-wide transition ${
+                item.slug === category.slug
+                  ? "border-[var(--brand-primary)] bg-[var(--brand-primary)] text-white"
+                  : "border-neutral-200 text-neutral-600 hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)]"
+              }`}
+            >
+              {item.title}
+            </Link>
+          ))}
+        </div>
+
+        {filtered.length > 0 ? (
+          <RevealGroup
+            className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+            stagger={0.06}
+          >
+            {filtered.map((product) => (
+              <Link
+                key={product.slug}
+                to="/product/$product"
+                params={{ product: product.slug }}
+                className="group overflow-hidden rounded-[var(--radius-premium)] border border-neutral-200 bg-white transition duration-500 hover:-translate-y-1.5 hover:border-transparent hover:shadow-[0_30px_70px_-24px_rgba(16,20,24,0.28)]"
+              >
+                <div className="aspect-square overflow-hidden bg-neutral-50">
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
+                    loading="lazy"
+                  />
+                </div>
+                <div className="border-t border-neutral-100 p-5 text-center">
+                  <h2 className="font-display text-base font-semibold text-neutral-900">
+                    {product.shortName}
+                  </h2>
+                  <p className="mt-1 line-clamp-2 text-xs leading-5 text-neutral-500">
+                    {product.name}
+                  </p>
+                </div>
+              </Link>
+            ))}
+          </RevealGroup>
+        ) : (
+          <div className="rounded-[var(--radius-premium)] border border-dashed border-neutral-300 p-10 text-center text-sm text-neutral-500">
+            No products matched your search.
+          </div>
+        )}
+      </div>
+    </section>
   );
 }

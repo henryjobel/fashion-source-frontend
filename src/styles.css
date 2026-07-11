@@ -19,6 +19,9 @@
  */
 
 @theme inline {
+  --font-sans: "Manrope", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Fraunces", ui-serif, Georgia, serif;
+  --radius-premium: 20px;
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
   --radius-lg: var(--radius);
@@ -69,10 +72,14 @@
   --card-foreground: oklch(0.129 0.042 264.695);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
-  --primary: oklch(0.72 0.17 152);
+  --primary: oklch(0.6583 0.1689 146.76);
   --primary-foreground: oklch(0.99 0 0);
-  --brand-blue: oklch(0.45 0.13 248);
-  --brand-green: oklch(0.72 0.17 152);
+  /* Premium 2026 palette: green is an accent only, charcoal is the dark surface color. */
+  --brand-primary: oklch(0.6583 0.1689 146.76); /* #37AC4E */
+  --brand-dark: oklch(0.1888 0.0103 248.37); /* #101418 */
+  /* Legacy aliases kept for pages not yet migrated to the new design system. */
+  --brand-blue: var(--brand-dark);
+  --brand-green: var(--brand-primary);
   --col-research: oklch(0.18 0 0);
   --col-design: oklch(0.74 0.17 55);
   --col-sourcing: oklch(0.68 0.18 145);
@@ -147,5 +154,17 @@
   body {
     background-color: var(--color-background);
     color: var(--color-foreground);
+    font-family: var(--font-sans);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.001ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.001ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
