@@ -5,7 +5,6 @@ import { useEffect, useMemo, useState } from "react";
 import { PremiumButton } from "@/components/premium/ui";
 import fsLogoTransparent from "@/assets/fs-logo-uploaded-transparent.png";
 import type { ApiNavigationItem } from "@/lib/api";
-import { productCategories, products as staticProducts } from "@/lib/products";
 import { useCategories, useNavigation, useProducts, useSettings } from "@/lib/queries";
 
 type NavNode = ApiNavigationItem & { children: ApiNavigationItem[] };
@@ -138,35 +137,32 @@ function ProductsMegaMenu({ dark }: { dark: boolean }) {
 
   const groups = useMemo(
     () => {
-      const rawCategories = apiCategories.length > 0 ? apiCategories : productCategories;
-      const categories = rawCategories.map((cat) => ({
-        id: "id" in cat ? cat.id : cat.slug,
+      const categories = apiCategories
+        .filter((cat) => cat.status === "active")
+        .map((cat) => ({
+        id: cat.id,
         slug: cat.slug,
         title: cat.title,
         intro: cat.intro,
-        parent: "parent" in cat ? cat.parent : null,
+        parent: cat.parent,
+        sortOrder: cat.sort_order,
       }));
-      const products =
-        apiProducts.length > 0
-          ? apiProducts.map((product) => ({
+      const products = apiProducts.map((product) => ({
               slug: product.slug,
               label: product.short_name || product.name,
               categorySlug: product.category_slug,
-            }))
-          : staticProducts.map((product) => ({
-              slug: product.slug,
-              label: product.shortName || product.name,
-              categorySlug: product.category,
             }));
 
       return categories
         .filter((cat) => !cat.parent)
+        .sort((a, b) => a.sortOrder - b.sortOrder)
         .map((cat) => ({
           to: `/products/${cat.slug}`,
           label: cat.title,
           note: cat.intro,
           subcategories: categories
             .filter((sub) => sub.parent === cat.id)
+            .sort((a, b) => a.sortOrder - b.sortOrder)
             .map((sub) => ({
               to: `/products/${sub.slug}`,
               label: sub.title,

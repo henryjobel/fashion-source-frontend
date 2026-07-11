@@ -991,6 +991,8 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
   const createMut = useCreateCategory();
   const updateMut = useUpdateCategory();
   const deleteMut = useDeleteCategory();
+  const uploadMut = useUploadMedia();
+  const [uploadingCategoryId, setUploadingCategoryId] = useState<string | null>(null);
   const topCategories = local
     .filter((cat) => !cat.parent)
     .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title));
@@ -1043,6 +1045,40 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
         : topCategories.length + 1,
     });
     setNewCategoryName("");
+  };
+
+  const uploadCatalogue = async (category: ApiCategory, file?: File) => {
+    if (!file) return;
+    if (file.type !== "application/pdf") {
+      toast.error("Please select a PDF catalogue.");
+      return;
+    }
+
+    setUploadingCategoryId(category.id);
+    try {
+      const result = await uploadMut.mutateAsync({
+        file,
+        altText: `${category.title} catalogue`,
+      });
+      const catalogueUrl = result.data.secure_url || result.data.url;
+      await updateMut.mutateAsync({
+        id: category.id,
+        body: { catalogue_url: catalogueUrl, catalogue_name: file.name },
+      });
+      setLocal((items) =>
+        items.map((item) =>
+          item.id === category.id
+            ? { ...item, catalogue_url: catalogueUrl, catalogue_name: file.name }
+            : item,
+        ),
+      );
+      toast.success("Category catalogue uploaded.");
+      savePulse();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Catalogue upload failed.");
+    } finally {
+      setUploadingCategoryId(null);
+    }
   };
 
   return (
@@ -1207,6 +1243,62 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
                   className={`${inputCls} resize-none`}
                 />
               </Field>
+              {!cat.parent && (
+                <Field label="Category Catalogue (PDF)">
+                  <div className="space-y-2 rounded-md border border-dashed border-neutral-300 p-3">
+                    {cat.catalogue_url ? (
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <a
+                          href={cat.catalogue_url}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="min-w-0 truncate text-sm font-bold text-[var(--brand-green)] hover:underline"
+                        >
+                          {cat.catalogue_name || "View current catalogue"}
+                        </a>
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await updateMut.mutateAsync({
+                              id: cat.id,
+                              body: { catalogue_url: "", catalogue_name: "" },
+                            });
+                            setLocal((items) =>
+                              items.map((item) =>
+                                item.id === cat.id
+                                  ? { ...item, catalogue_url: "", catalogue_name: "" }
+                                  : item,
+                              ),
+                            );
+                            toast.success("Catalogue removed from category.");
+                          }}
+                          className="text-xs font-black text-red-600 hover:underline"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    ) : (
+                      <p className="text-xs text-neutral-500">
+                        No catalogue uploaded. PDF must be 25MB or smaller.
+                      </p>
+                    )}
+                    <label className="inline-flex cursor-pointer items-center gap-2 rounded-md bg-neutral-900 px-3 py-2 text-xs font-black text-white hover:bg-neutral-700">
+                      <Upload className="h-3.5 w-3.5" />
+                      {uploadingCategoryId === cat.id ? "Uploading…" : "Upload PDF"}
+                      <input
+                        type="file"
+                        accept="application/pdf,.pdf"
+                        className="hidden"
+                        disabled={uploadingCategoryId !== null}
+                        onChange={(event) => {
+                          void uploadCatalogue(cat, event.target.files?.[0]);
+                          event.currentTarget.value = "";
+                        }}
+                      />
+                    </label>
+                  </div>
+                </Field>
+              )}
             </div>
           ))}
           {local.length === 0 && (

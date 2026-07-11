@@ -1,9 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Search } from "lucide-react";
+import { Download, Search } from "lucide-react";
 import { useMemo, useState } from "react";
 
 import { PageHero } from "@/components/page-hero";
 import { RevealGroup } from "@/components/premium/motion";
+import { getCategoryTreeSlugs } from "@/lib/category-tree";
 import { getCategory, getProductsByCategory, productCategories } from "@/lib/products";
 import { useProducts, useCategories } from "@/lib/queries";
 
@@ -56,10 +57,19 @@ function ProductsCategory() {
       description: "Products in this category will appear here after they are uploaded.",
     };
 
+  const includedCategorySlugs = useMemo(
+    () => getCategoryTreeSlugs(apiCategories ?? [], params.category),
+    [apiCategories, params.category],
+  );
+  const catalogue =
+    "catalogue_url" in category && !category.parent && category.catalogue_url
+      ? { url: category.catalogue_url, name: category.catalogue_name || `${category.title}.pdf` }
+      : null;
+
   const allProducts = useMemo(() => {
     if (apiProducts && apiProducts.length > 0) {
       return apiProducts
-        .filter((p) => p.category_slug === params.category)
+        .filter((p) => includedCategorySlugs.has(p.category_slug))
         .map((p) => ({
           slug: p.slug,
           name: p.name,
@@ -73,7 +83,7 @@ function ProductsCategory() {
       shortName: p.shortName,
       image: p.image,
     }));
-  }, [apiProducts, staticProducts, params.category]);
+  }, [apiProducts, staticProducts, includedCategorySlugs]);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -164,6 +174,24 @@ function ProductsCategory() {
         ) : (
           <div className="rounded-[var(--radius-premium)] border border-dashed border-neutral-300 p-10 text-center text-sm text-neutral-500">
             No products matched your search.
+          </div>
+        )}
+
+        {catalogue && (
+          <div className="mt-14 flex flex-col items-center rounded-[var(--radius-premium)] bg-[var(--brand-dark)] px-6 py-10 text-center text-white sm:px-10">
+            <p className="text-[11px] font-black uppercase tracking-[0.2em] text-white/50">
+              Category Catalogue
+            </p>
+            <h2 className="mt-3 font-display text-2xl font-semibold">
+              Explore the complete {category.title} collection
+            </h2>
+            <a
+              href={catalogue.url}
+              download={catalogue.name}
+              className="mt-6 inline-flex items-center gap-2 rounded-full bg-[var(--brand-primary)] px-6 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:brightness-110"
+            >
+              <Download className="h-4 w-4" /> View More
+            </a>
           </div>
         )}
       </div>

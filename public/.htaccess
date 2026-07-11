@@ -10,10 +10,16 @@
 </IfModule>
 
 <IfModule mod_headers.c>
-  <FilesMatch "\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2)$">
+  <FilesMatch "\.(js|css|png|jpg|jpeg|gif|svg|webp|ico|woff|woff2|pdf)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
   </FilesMatch>
   <FilesMatch "\.(html)$">
     Header set Cache-Control "no-cache"
   </FilesMatch>
 </IfModule>
+
+<IfModule mod_mime.c>
+  AddType application/pdf .pdf
+</IfModule>
+
+Options -Indexes

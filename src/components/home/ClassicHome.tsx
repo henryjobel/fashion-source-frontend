@@ -14,12 +14,12 @@ import {
   Users,
   X,
 } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { AnimatedCounter, RevealGroup } from "@/components/premium/motion";
 import { getField, useCmsPage } from "@/lib/cms";
 import { prefersReducedMotion } from "@/lib/gsap";
-import { useSettings } from "@/lib/queries";
+import { useCategories, useSettings } from "@/lib/queries";
 import fsLogoTransparent from "@/assets/fs-logo-uploaded-transparent.png";
 import heroGarments from "@/assets/hero-garments.jpg";
 
@@ -49,47 +49,6 @@ const dropdownItems = {
     { label: "Our Profile", to: "/our-profile" },
   ],
 };
-
-const productMegaGroups = [
-  {
-    label: "Knit",
-    to: "/products/knit",
-    items: [
-      { label: "Men's T-Shirt / Polo / Tank Top", to: "/product/mens-t-shirt-polo-tank-top" },
-      { label: "Ladies T-Shirt / Tank Top / Nightwear", to: "/product/ladies-t-shirt-tank-top-nightwear" },
-      { label: "Kids T-Shirt / Dress / Jogging Set", to: "/product/kids-t-shirt-dress-jogging-set" },
-      { label: "Fleece Sweatshirt / Jacket", to: "/product/fleece-sweatshirt-jacket" },
-      { label: "Babies T-Shirt", to: "/product/babies-t-shirt" },
-      { label: "Baby Rompers", to: "/product/baby-rompers" },
-    ],
-  },
-  {
-    label: "Woven",
-    to: "/products/woven",
-    items: [
-      { label: "Shirts", to: "/product/shirts" },
-      { label: "Ladies Woven Tops, Dress", to: "/product/ladies-woven-tops-dress" },
-      { label: "Woven Bottom", to: "/product/woven-bottom" },
-      { label: "Cargo Shorts", to: "/product/cargo-shorts" },
-      { label: "Swimming Wear / Denim Shorts", to: "/product/swimming-wear-denim-shorts" },
-      { label: "Jacket", to: "/product/jacket" },
-    ],
-  },
-  {
-    label: "Flat Knit",
-    to: "/products/flat-knit",
-    items: [{ label: "Flat Knit Sweater", to: "/product/flat-knit-sweater" }],
-  },
-  {
-    label: "Others",
-    to: "/products/others",
-    items: [
-      { label: "Cap", to: "/product/cap" },
-      { label: "Bed Sheet", to: "/product/bed-sheet" },
-      { label: "Towel", to: "/product/towel" },
-    ],
-  },
-];
 
 const defaultStats = [
   { icon: CalendarCheck, value: "2017", suffix: "", label: "Established" },
@@ -274,6 +233,29 @@ function ClassicDropdown({
 }
 
 function ClassicProductsMegaMenu() {
+  const { data: categories = [] } = useCategories();
+  const productMegaGroups = useMemo(
+    () =>
+      categories
+        .filter((category) => category.status === "active" && !category.parent)
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((category) => ({
+          label: category.title,
+          to: `/products/${category.slug}`,
+          items: categories
+            .filter(
+              (subcategory) =>
+                subcategory.status === "active" && subcategory.parent === category.id,
+            )
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map((subcategory) => ({
+              label: subcategory.title,
+              to: `/products/${subcategory.slug}`,
+            })),
+        })),
+    [categories],
+  );
+
   return (
     <div className="group relative">
       <button className="inline-flex items-center gap-1.5 whitespace-nowrap py-7 text-xs font-black uppercase tracking-wide text-neutral-600 transition hover:text-[var(--brand-primary)]">
@@ -302,7 +284,7 @@ function ClassicProductsMegaMenu() {
               View All Products
             </span>
           </Link>
-          <div className="grid grid-cols-4 gap-0 p-6">
+          <div className="grid max-h-[420px] grid-cols-2 gap-y-6 overflow-y-auto p-6 md:grid-cols-3 lg:grid-cols-4">
             {productMegaGroups.map((group) => (
               <div key={group.to} className="border-r border-neutral-100 px-4 last:border-r-0">
                 <Link

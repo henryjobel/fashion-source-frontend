@@ -33,6 +33,8 @@ export type ApiCategory = {
   title: string;
   intro: string;
   description: string;
+  catalogue_url: string;
+  catalogue_name: string;
   parent: string | null;
   parent_id: string | null;
   parent_slug: string;
@@ -196,6 +198,8 @@ export const api = {
     title: string;
     intro?: string;
     description?: string;
+    catalogue_url?: string;
+    catalogue_name?: string;
     parent?: string | null;
     status?: "active" | "draft";
     sort_order?: number;

@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import { PageHero } from "@/components/page-hero";
 import { RevealGroup } from "@/components/premium/motion";
+import { getCategoryTreeSlugs } from "@/lib/category-tree";
 import { productCategories, products as staticProducts } from "@/lib/products";
 import { useProducts, useCategories } from "@/lib/queries";
 
@@ -55,17 +56,26 @@ function AllProducts() {
     return categories.map((c) => ({ slug: c.slug, title: c.title }));
   }, [categories]);
 
+  const includedCategorySlugs = useMemo(
+    () =>
+      category === "all"
+        ? null
+        : getCategoryTreeSlugs(apiCategories ?? [], category),
+    [apiCategories, category],
+  );
+
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
     return displayProducts.filter((product) => {
-      const matchesCategory = category === "all" || product.category === category;
+      const matchesCategory =
+        category === "all" || includedCategorySlugs?.has(product.category) === true;
       const matchesQuery =
         !needle ||
         product.name.toLowerCase().includes(needle) ||
         product.shortName.toLowerCase().includes(needle);
       return matchesCategory && matchesQuery;
     });
-  }, [displayProducts, category, query]);
+  }, [displayProducts, category, includedCategorySlugs, query]);
 
   return (
     <section className="bg-white">
