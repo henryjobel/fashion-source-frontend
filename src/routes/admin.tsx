@@ -355,25 +355,20 @@ function CategorySelect({
   groups?: CategoryGroup[];
   onChange: (slug: string) => void;
 }) {
-  const categoryGroups = groups ?? buildCategoryGroups(categories);
+  const ordered: { category: ApiCategory; depth: number }[] = [];
+  const append = (parent: string | null, depth: number) => {
+    categories
+      .filter((item) => item.parent === parent)
+      .sort((a, b) => a.sort_order - b.sort_order || a.title.localeCompare(b.title))
+      .forEach((category) => {
+        ordered.push({ category, depth });
+        append(category.id, depth + 1);
+      });
+  };
+  append(null, 0);
   return (
     <select value={value} onChange={(e) => onChange(e.target.value)} className={inputCls}>
-      {categoryGroups.map((group) =>
-        group.children.length > 0 ? (
-          <optgroup key={group.id} label={group.title}>
-            <option value={group.slug}>{group.title} (main category)</option>
-            {group.children.map((child) => (
-              <option key={child.id} value={child.slug}>
-                {child.title}
-              </option>
-            ))}
-          </optgroup>
-        ) : (
-          <option key={group.id} value={group.slug}>
-            {group.title}
-          </option>
-        ),
-      )}
+      {ordered.map(({ category, depth }) => <option key={category.id} value={category.slug}>{"— ".repeat(depth)}{category.title}</option>)}
     </select>
   );
 }
@@ -1087,7 +1082,7 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
         <div>
           <h2 className="text-xl font-black">Categories</h2>
           <p className="mt-1 text-sm text-neutral-500">
-            Add main categories and subcategories. Product mega menu updates from this list.
+            Build Division → Men/Women/Kids → Product Category. The product menu updates automatically.
           </p>
         </div>
         <div className="flex flex-wrap items-end gap-2">
@@ -1124,10 +1119,10 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
             onChange={(e) => setNewParentId(e.target.value)}
             className={`${inputCls} w-52 bg-white`}
           >
-            <option value="">Main category</option>
-            {topCategories.map((cat) => (
+            <option value="">Main division</option>
+            {local.map((cat) => (
               <option key={cat.id} value={cat.id}>
-                Under {cat.title}
+              Under {cat.parent ? "— " : ""}{cat.title}
               </option>
             ))}
           </select>
@@ -1194,7 +1189,7 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
                 >
                   <option value="">None — top-level category</option>
                   {local
-                    .filter((c) => c.id !== cat.id && !c.parent)
+                    .filter((c) => c.id !== cat.id)
                     .map((c) => (
                       <option key={c.id} value={c.id}>
                         {c.title}
@@ -1243,7 +1238,7 @@ function CategoriesPanel({ savePulse }: { savePulse: () => void }) {
                   className={`${inputCls} resize-none`}
                 />
               </Field>
-              {!cat.parent && (
+              {cat.parent && (
                 <Field label="Category Catalogue (PDF)">
                   <div className="space-y-2 rounded-md border border-dashed border-neutral-300 p-3">
                     {cat.catalogue_url ? (

@@ -166,6 +166,10 @@ function ProductsMegaMenu({ dark }: { dark: boolean }) {
             .map((sub) => ({
               to: `/products/${sub.slug}`,
               label: sub.title,
+              children: categories
+                .filter((leaf) => leaf.parent === sub.id)
+                .sort((a, b) => a.sortOrder - b.sortOrder)
+                .map((leaf) => ({ to: `/products/${leaf.slug}`, label: leaf.title })),
             })),
           items: products
             .filter((product) => product.categorySlug === cat.slug)
@@ -205,15 +209,14 @@ function ProductsMegaMenu({ dark }: { dark: boolean }) {
                   Explore our garment categories
                 </h3>
                 <p className="mt-4 text-sm leading-6 text-white/60">
-                  Knit, woven, flat knit and selected accessories produced through a compliant
-                  buying-house network.
+                  Knit, woven and selected specialist collections for men, women and kids.
                 </p>
               </div>
               <div className="inline-flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)]">
                 View All Products <ArrowUpRight className="h-4 w-4" />
               </div>
             </Link>
-            <div className="grid grid-cols-4 gap-0 p-7">
+            <div className="grid grid-cols-3 gap-0 p-7">
               {groups.map((group) => (
                 <div key={group.to} className="border-r border-neutral-100 px-5 last:border-r-0">
                   <Link to={group.to} className="group/heading inline-flex items-center gap-2">
@@ -227,13 +230,10 @@ function ProductsMegaMenu({ dark }: { dark: boolean }) {
                   {group.subcategories.length > 0 && (
                     <div className="mt-3 space-y-1">
                       {group.subcategories.map((sub) => (
-                        <Link
-                          key={sub.to}
-                          to={sub.to}
-                          className="block border-b border-neutral-100 py-1.5 text-xs font-black uppercase tracking-wide text-neutral-700 transition hover:text-[var(--brand-primary)]"
-                        >
-                          {sub.label}
-                        </Link>
+                        <div key={sub.to} className="border-b border-neutral-100 py-2">
+                          <Link to={sub.to} className="text-xs font-black uppercase tracking-wide text-neutral-800 transition hover:text-[var(--brand-primary)]">{sub.label}</Link>
+                          {sub.children.slice(0, 4).map((leaf) => <Link key={leaf.to} to={leaf.to} className="mt-1 block text-[11px] leading-4 text-neutral-500 hover:text-[var(--brand-primary)]">{leaf.label}</Link>)}
+                        </div>
                       ))}
                     </div>
                   )}
@@ -284,6 +284,7 @@ export function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const tree = useHeaderTree();
   const { data: settings } = useSettings();
+  const { data: productCategories = [] } = useCategories();
   const location = useLocation();
   const isHome = location.pathname === "/";
 
@@ -373,6 +374,27 @@ export function SiteHeader() {
               </span>
               <ArrowUpRight className="h-5 w-5" />
             </Link>
+
+            <div className="mb-5 space-y-3">
+              {productCategories
+                .filter((category) => category.status === "active" && !category.parent)
+                .sort((a, b) => a.sort_order - b.sort_order)
+                .map((division) => (
+                  <div key={division.id} className="rounded-xl border border-neutral-200 bg-white p-2">
+                    <MobileMenuLink to={`/products/${division.slug}`} label={division.title} onClick={() => setOpen(false)} />
+                    <div className="flex flex-wrap gap-2 px-3 pb-2">
+                      {productCategories
+                        .filter((category) => category.parent === division.id && category.status === "active")
+                        .sort((a, b) => a.sort_order - b.sort_order)
+                        .map((audience) => (
+                          <Link key={audience.id} to="/products/$category" params={{ category: audience.slug }} onClick={() => setOpen(false)} className="rounded-full bg-neutral-100 px-3 py-1.5 text-[11px] font-black text-neutral-600">
+                            {audience.title}
+                          </Link>
+                        ))}
+                    </div>
+                  </div>
+                ))}
+            </div>
 
             <div className="space-y-5">
               {otherItems.map((item) => (
