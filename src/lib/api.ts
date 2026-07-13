@@ -1,5 +1,42 @@
 const BASE_URL = ((import.meta.env.VITE_API_URL as string | undefined) ?? "").replace(/\/+$/, "");
+const API_ORIGIN = getOrigin(BASE_URL);
 const TOKEN_KEY = "fsbd-admin-token";
+
+function getOrigin(value: string) {
+  if (!value) return "";
+  try {
+    return new URL(value).origin;
+  } catch {
+    return "";
+  }
+}
+
+export function resolveApiAssetUrl(value?: string | null) {
+  if (!value) return "";
+  if (!API_ORIGIN) return value;
+
+  try {
+    const url = new URL(value, API_ORIGIN);
+    const isLocalApiUrl = ["localhost", "127.0.0.1", "0.0.0.0"].includes(url.hostname);
+    if (isLocalApiUrl && url.pathname.startsWith("/api/")) {
+      return `${API_ORIGIN}${url.pathname}${url.search}${url.hash}`;
+    }
+    if (value.startsWith("/api/")) {
+      return `${API_ORIGIN}${url.pathname}${url.search}${url.hash}`;
+    }
+  } catch {
+    return value;
+  }
+
+  return value;
+}
+
+function normalizeCategory(category: ApiCategory): ApiCategory {
+  return {
+    ...category,
+    catalogue_url: resolveApiAssetUrl(category.catalogue_url),
+  };
+}
 
 // ── Token helpers ──────────────────────────────────────────────────────────────
 export const auth = {
@@ -193,7 +230,11 @@ export const api = {
     apiFetch<{ message: string }>(`/api/products/${id}`, { method: "DELETE" }),
 
   // Categories
-  getCategories: () => apiFetch<{ data: ApiCategory[] }>("/api/categories"),
+  getCategories: () =>
+    apiFetch<{ data: ApiCategory[] }>("/api/categories").then((response) => ({
+      ...response,
+      data: response.data.map(normalizeCategory),
+    })),
   createCategory: (body: {
     title: string;
     intro?: string;
@@ -276,7 +317,13 @@ export const api = {
       "/api/media/upload",
       { method: "POST", body: formData },
       true,
-    );
+    ).then((response) => ({
+      ...response,
+      data: {
+        url: resolveApiAssetUrl(response.data.url),
+        secure_url: resolveApiAssetUrl(response.data.secure_url),
+      },
+    }));
   },
 
   // Pages

@@ -7,8 +7,12 @@ import {
   ChevronRight,
   Factory,
   Globe2,
+  Clock,
+  Mail,
   Menu,
   Monitor,
+  MapPin,
+  Phone,
   Settings,
   Ship,
   Users,
@@ -145,63 +149,13 @@ const exportTypes = [
   { label: "Work Wear", value: 3, color: "#7f443c" },
 ];
 
-const footerColumns = [
-  {
-    heading: "Knit",
-    headingTo: "/products/knit",
-    links: [
-      { label: "Men's", to: "/product/mens-t-shirt-polo-tank-top" },
-      { label: "Ladies", to: "/product/ladies-t-shirt-tank-top-nightwear" },
-      { label: "Kids", to: "/product/kids-t-shirt-dress-jogging-set" },
-      { label: "Fleece", to: "/product/fleece-sweatshirt-jacket" },
-      { label: "Babies", to: "/product/babies-t-shirt" },
-      { label: "Baby Rompers", to: "/product/baby-rompers" },
-      { label: "Lingerie", to: "/product/ladies-lingerie-swimwear" },
-      { label: "Underwear", to: "/product/underwear-boxer-brief-panty" },
-    ],
-  },
-  {
-    heading: "Woven",
-    headingTo: "/products/woven",
-    links: [
-      { label: "Shirts", to: "/product/shirts" },
-      { label: "Ladies Woven Tops, Dress", to: "/product/ladies-woven-tops-dress" },
-      { label: "Woven Bottom", to: "/product/woven-bottom" },
-      { label: "Cargo Shorts", to: "/product/cargo-shorts" },
-      { label: "Swimming Wear", to: "/product/swimming-wear-denim-shorts" },
-      { label: "Jacket", to: "/product/jacket" },
-      { label: "Nightwear", to: "/product/nightwear" },
-      { label: "Workwear", to: "/product/workwear" },
-      { label: "Blazer", to: "/product/blazer" },
-    ],
-  },
-  {
-    heading: "Flat Knit",
-    headingTo: "/products/flat-knit",
-    links: [{ label: "Flat Knit Sweater", to: "/product/flat-knit-sweater" }],
-  },
-  {
-    heading: "Others",
-    headingTo: "/products/others",
-    links: [
-      { label: "Cap", to: "/product/cap" },
-      { label: "Bed Sheet", to: "/product/bed-sheet" },
-      { label: "Towel", to: "/product/towel" },
-    ],
-  },
-  {
-    heading: "Company",
-    headingTo: "/about",
-    links: [
-      { label: "Our Services", to: "/services" },
-      { label: "About Us", to: "/about" },
-      { label: "Compliance", to: "/compliance" },
-      { label: "Why Work With Us", to: "/why-work-with-us" },
-      { label: "Our Culture", to: "/our-culture" },
-      { label: "Key Contacts", to: "/key-contacts" },
-      { label: "Contact", to: "/contact" },
-    ],
-  },
+const footerQuickLinks = [
+  { label: "About Us", to: "/about" },
+  { label: "Our Products", to: "/products" },
+  { label: "Our Services", to: "/services" },
+  { label: "Compliance", to: "/compliance" },
+  { label: "Our Profile", to: "/our-profile" },
+  { label: "Contact", to: "/contact" },
 ];
 
 function ClassicDropdown({
@@ -331,7 +285,10 @@ function ClassicHeader() {
 
       <header className="border-b border-neutral-200 bg-white">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-5 lg:gap-8 lg:py-5">
-          <Link to="/" className="flex h-16 w-[280px] max-w-[72vw] items-center sm:h-20 sm:w-[390px] sm:max-w-[52vw]">
+          <Link
+            to="/"
+            className="flex h-16 w-[280px] max-w-[72vw] items-center sm:h-20 sm:w-[390px] sm:max-w-[52vw]"
+          >
             <img
               src={logoSrc}
               alt={siteName}
@@ -605,7 +562,10 @@ function ExportChart() {
         className="mx-auto mt-6 grid max-w-6xl gap-8 bg-white px-5 py-8 shadow-[0_20px_60px_-48px_rgba(16,20,24,0.4)] sm:px-8 sm:py-10 lg:grid-cols-[1fr_1fr] lg:gap-12"
       >
         <div className="flex flex-col items-center justify-center gap-6 sm:gap-8 md:flex-row lg:gap-10">
-          <svg viewBox="0 0 320 320" className="aspect-square w-full max-w-[280px] sm:max-w-[320px]">
+          <svg
+            viewBox="0 0 320 320"
+            className="aspect-square w-full max-w-[280px] sm:max-w-[320px]"
+          >
             {segments.map((seg, index) => (
               <path
                 key={seg.color}
@@ -650,36 +610,91 @@ function ExportChart() {
 }
 
 function ClassicFooter() {
+  const { data: settings } = useSettings();
+  const siteName = settings?.siteName || "Fashion Source BD";
+  const logoSrc = settings?.footerLogo || settings?.logo || fsLogoTransparent;
+  const about =
+    settings?.footerAbout ||
+    "A 100% export oriented garments buying house connecting buyers with compliant manufacturing partners across Bangladesh.";
+  const email = settings?.email || "info@fashionsourcebd.com";
+  const phone = settings?.phone || "+880 1711-000000";
+  const address =
+    settings?.address || "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh";
+  const businessHours = settings?.businessHours || "Sunday - Thursday, 9:00 AM - 6:00 PM";
+  const copyright =
+    settings?.footerCopyright || `Copyrights 1998 - ${new Date().getFullYear()} (c) ${siteName}`;
+  const subsidiaryLabel = settings?.footerSubsidiaryLabel || "";
+  const subsidiaryName = settings?.footerSubsidiaryName || "JANN GROUP";
+
   return (
     <footer className="bg-[#303030] text-white">
-      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-5">
-        {footerColumns.map((column) => (
-          <div key={column.heading}>
-            <Link
-              to={column.headingTo}
-              className="mb-5 inline-block text-xl font-black uppercase transition hover:text-[var(--brand-primary)]"
+      <div className="mx-auto grid max-w-6xl gap-10 px-5 py-14 lg:grid-cols-[1.1fr_0.8fr_1fr]">
+        <div>
+          <Link to="/" className="inline-flex max-w-[260px] items-center">
+            <img
+              src={logoSrc}
+              alt={siteName}
+              className="h-auto max-h-20 w-full object-contain object-left"
+            />
+          </Link>
+          <p className="mt-5 max-w-sm text-sm font-semibold leading-6 text-white/65">{about}</p>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-white/45">
+            Quick Links
+          </h3>
+          <ul className="mt-5 grid gap-2 text-sm font-bold sm:grid-cols-2 lg:grid-cols-1">
+            {footerQuickLinks.map((link) => (
+              <li key={link.label}>
+                <Link
+                  to={link.to}
+                  className="text-white/80 transition hover:text-[var(--brand-primary)]"
+                >
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div>
+          <h3 className="text-sm font-black uppercase tracking-[0.18em] text-white/45">Contact</h3>
+          <div className="mt-5 space-y-4 text-sm font-bold leading-6 text-white/75">
+            <a
+              href={`tel:${phone.replace(/\s+/g, "")}`}
+              className="flex gap-3 transition hover:text-[var(--brand-primary)]"
             >
-              {column.heading}
-            </Link>
-            <ul className="space-y-2 text-sm font-bold">
-              {column.links.map((link) => (
-                <li key={link.label} className="border-b border-white/10 pb-1">
-                  <Link
-                    to={link.to}
-                    className="text-white/80 transition hover:text-[var(--brand-primary)]"
-                  >
-                    {link.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+              <Phone className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <span>{phone}</span>
+            </a>
+            <a
+              href={`mailto:${email}`}
+              className="flex gap-3 transition hover:text-[var(--brand-primary)]"
+            >
+              <Mail className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <span>{email}</span>
+            </a>
+            <div className="flex gap-3">
+              <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <span>{address}</span>
+            </div>
+            <div className="flex gap-3">
+              <Clock className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <span>{businessHours}</span>
+            </div>
           </div>
-        ))}
+        </div>
       </div>
       <div className="bg-[#282828]">
         <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-5 text-xs">
-          <div>Copyrights 1998 - 2025 (c) Fashion Source BD</div>
-          <div className="font-bold text-[var(--brand-primary)]">A SUBSIDIARY OF JANN GROUP</div>
+          <div>{copyright}</div>
+          {subsidiaryName && (
+            <div className="font-bold text-[var(--brand-primary)]">
+              {subsidiaryLabel ? `${subsidiaryLabel} ` : "A SUBSIDIARY OF "}
+              {subsidiaryName}
+            </div>
+          )}
         </div>
       </div>
     </footer>
