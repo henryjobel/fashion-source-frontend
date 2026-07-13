@@ -959,7 +959,7 @@ export const defaultCmsPages: CmsPage[] = [
           field("person1Role", "Person 1 Role", "Director"),
           field("person1Initials", "Person 1 Initials", "AS"),
           field("person1Email", "Person 1 Email", "info@fashionsource-bd.com"),
-          field("person2Name", "Person 2 Name", "Md. Abdul Karim"),
+          field("person2Name", "Person 2 Name", "Md. Abdul Korim"),
           field("person2Role", "Person 2 Role", "Managing Director & CEO"),
           field("person2Initials", "Person 2 Initials", "AK"),
           field("person2Email", "Person 2 Email", "info@fashionsource-bd.com"),

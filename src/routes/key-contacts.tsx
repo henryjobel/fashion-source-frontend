@@ -38,7 +38,7 @@ function Page() {
       email: "info@fashionsource-bd.com",
     },
     {
-      name: "Md. Abdul Karim",
+      name: "Md. Abdul Korim",
       role: "Managing Director & CEO",
       initials: "AK",
       email: "info@fashionsource-bd.com",
