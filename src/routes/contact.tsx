@@ -90,7 +90,7 @@ function Contact() {
               <h2 className="font-display text-lg font-semibold text-[var(--brand-dark)]">Call</h2>
               <div className="mt-4 space-y-1 text-sm font-semibold text-neutral-600">
                 <div>+8801613341001</div>
-                <div>+880168684132</div>
+                <div>+8801686841325</div>
               </div>
             </div>
             <div className="rounded-[var(--radius-premium)] border border-neutral-200 bg-white p-7 shadow-sm">

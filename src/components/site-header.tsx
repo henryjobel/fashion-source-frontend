@@ -1,11 +1,10 @@
-import { Link, useLocation } from "@tanstack/react-router";
-import { ArrowUpRight, ChevronDown, ChevronRight, Menu, X } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { Link } from "@tanstack/react-router";
+import { ChevronDown, ChevronRight, Menu, X } from "lucide-react";
+import { useMemo, useState } from "react";
 
-import { PremiumButton } from "@/components/premium/ui";
 import fsLogoTransparent from "@/assets/fs-logo-uploaded-transparent.png";
 import type { ApiNavigationItem } from "@/lib/api";
-import { useCategories, useNavigation, useProducts, useSettings } from "@/lib/queries";
+import { useCategories, useNavigation, useSettings } from "@/lib/queries";
 
 type NavNode = ApiNavigationItem & { children: ApiNavigationItem[] };
 
@@ -49,7 +48,7 @@ const fallbackHeaderNavigation: ApiNavigationItem[] = [
 function useHeaderTree() {
   const { data: items = [] } = useNavigation("header");
   return useMemo<NavNode[]>(() => {
-    const source = (items.length > 0 ? items : fallbackHeaderNavigation).filter(
+    const source = [...(items.length > 0 ? items : fallbackHeaderNavigation)].filter(
       (item) => item.url !== "/job-openings",
     );
     const contactItem = source.find(
@@ -62,11 +61,15 @@ function useHeaderTree() {
       );
     }
 
-    const top = source.filter((i) => !i.parent && i.status === "active");
-    return top.map((item) => ({
-      ...item,
-      children: source.filter((c) => c.parent === item.id && c.status === "active"),
-    }));
+    return source
+      .filter((item) => !item.parent && item.status === "active")
+      .sort((a, b) => a.sort_order - b.sort_order)
+      .map((item) => ({
+        ...item,
+        children: source
+          .filter((child) => child.parent === item.id && child.status === "active")
+          .sort((a, b) => a.sort_order - b.sort_order),
+      }));
   }, [items]);
 }
 
@@ -81,7 +84,7 @@ function NavLink({
   children: React.ReactNode;
   onClick?: () => void;
 }) {
-  if (!to) return <span className={className}>{children}</span>;
+  if (!to || to === "#") return <span className={className}>{children}</span>;
   if (/^https?:\/\//.test(to)) {
     return (
       <a href={to} target="_blank" rel="noreferrer" className={className} onClick={onClick}>
@@ -96,34 +99,21 @@ function NavLink({
   );
 }
 
-function Dropdown({
-  label,
-  items,
-  dark,
-}: {
-  label: string;
-  items: ApiNavigationItem[];
-  dark: boolean;
-}) {
+function Dropdown({ label, items }: { label: string; items: ApiNavigationItem[] }) {
   return (
     <div className="group relative">
-      <button
-        className={`inline-flex items-center gap-1.5 whitespace-nowrap py-5 text-[11px] font-bold uppercase tracking-[0.11em] transition-colors ${
-          dark
-            ? "text-white/85 hover:text-white"
-            : "text-neutral-700 hover:text-[var(--brand-dark)]"
-        }`}
-      >
-        {label} <ChevronDown className="h-3 w-3" />
+      <button className="inline-flex items-center gap-1.5 whitespace-nowrap py-7 text-xs font-black uppercase tracking-wide text-neutral-600 transition hover:text-[var(--brand-primary)]">
+        {label}
+        <ChevronDown className="h-3 w-3 transition group-hover:rotate-180" />
       </button>
-      <div className="absolute left-1/2 top-full min-w-[220px] -translate-x-1/2 rounded-2xl border border-neutral-200 bg-white/95 p-2 opacity-0 shadow-[0_30px_70px_-24px_rgba(16,20,24,0.35)] backdrop-blur-xl transition-all duration-200 group-hover:visible group-hover:opacity-100 invisible translate-y-1 group-hover:translate-y-0">
-        {items.map((it) => (
+      <div className="invisible absolute left-1/2 top-full z-50 min-w-[210px] -translate-x-1/2 translate-y-2 border border-neutral-200 bg-white p-1.5 opacity-0 shadow-[0_24px_60px_-28px_rgba(16,20,24,0.45)] transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+        {items.map((item) => (
           <NavLink
-            key={it.id}
-            to={it.url}
-            className="block rounded-xl px-4 py-2.5 text-sm font-medium text-neutral-700 transition hover:bg-neutral-50 hover:text-[var(--brand-primary)]"
+            key={item.id}
+            to={item.url}
+            className="block border-b border-neutral-100 px-4 py-2.5 text-sm font-bold text-neutral-600 transition last:border-0 hover:bg-neutral-50 hover:text-[var(--brand-primary)]"
           >
-            {it.label}
+            {item.label}
           </NavLink>
         ))}
       </div>
@@ -131,126 +121,80 @@ function Dropdown({
   );
 }
 
-function ProductsMegaMenu({ dark }: { dark: boolean }) {
-  const { data: apiCategories = [] } = useCategories();
-  const { data: apiProducts = [] } = useProducts();
-
-  const groups = useMemo(
-    () => {
-      const categories = apiCategories
-        .filter((cat) => cat.status === "active")
-        .map((cat) => ({
-        id: cat.id,
-        slug: cat.slug,
-        title: cat.title,
-        intro: cat.intro,
-        parent: cat.parent,
-        sortOrder: cat.sort_order,
-      }));
-      const products = apiProducts.map((product) => ({
-              slug: product.slug,
-              label: product.short_name || product.name,
-              categorySlug: product.category_slug,
-            }));
-
-      return categories
-        .filter((cat) => !cat.parent)
-        .sort((a, b) => a.sortOrder - b.sortOrder)
-        .map((cat) => ({
-          to: `/products/${cat.slug}`,
-          label: cat.title,
-          note: cat.intro,
-          subcategories: categories
-            .filter((sub) => sub.parent === cat.id)
-            .sort((a, b) => a.sortOrder - b.sortOrder)
-            .map((sub) => ({
-              to: `/products/${sub.slug}`,
-              label: sub.title,
-              children: categories
-                .filter((leaf) => leaf.parent === sub.id)
-                .sort((a, b) => a.sortOrder - b.sortOrder)
-                .map((leaf) => ({ to: `/products/${leaf.slug}`, label: leaf.title })),
+function ProductsMegaMenu() {
+  const { data: categories = [] } = useCategories();
+  const productMegaGroups = useMemo(
+    () =>
+      categories
+        .filter((category) => category.status === "active" && !category.parent)
+        .sort((a, b) => a.sort_order - b.sort_order)
+        .map((category) => ({
+          label: category.title,
+          to: `/products/${category.slug}`,
+          items: categories
+            .filter(
+              (subcategory) =>
+                subcategory.status === "active" && subcategory.parent === category.id,
+            )
+            .sort((a, b) => a.sort_order - b.sort_order)
+            .map((subcategory) => ({
+              label: subcategory.title,
+              to: `/products/${subcategory.slug}`,
             })),
-          items: products
-            .filter((product) => product.categorySlug === cat.slug)
-            .map((product) => ({
-              to: `/product/${product.slug}`,
-              label: product.label,
-            })),
-        }));
-    },
-    [apiCategories, apiProducts],
+        })),
+    [categories],
   );
 
   return (
     <div className="group relative">
-      <button
-        className={`inline-flex items-center gap-1.5 whitespace-nowrap py-5 text-[11px] font-bold uppercase tracking-[0.11em] transition-colors ${
-          dark
-            ? "text-white/85 hover:text-white"
-            : "text-neutral-700 hover:text-[var(--brand-dark)]"
-        }`}
-      >
+      <button className="inline-flex items-center gap-1.5 whitespace-nowrap py-7 text-xs font-black uppercase tracking-wide text-neutral-600 transition hover:text-[var(--brand-primary)]">
         Our Products
-        <ChevronDown className="h-3 w-3 transition-transform duration-200 group-hover:rotate-180" />
+        <ChevronDown className="h-3 w-3 transition group-hover:rotate-180" />
       </button>
-      <div className="pointer-events-none absolute left-1/2 top-full z-50 w-[min(940px,calc(100vw-2rem))] -translate-x-1/2 translate-y-1 pt-3 opacity-0 invisible transition-all duration-200 ease-out group-hover:pointer-events-auto group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
-        <div className="overflow-hidden rounded-[var(--radius-premium)] border border-neutral-200 bg-white shadow-[0_40px_90px_-24px_rgba(16,20,24,0.35)]">
-          <div className="grid grid-cols-[1fr_2.3fr]">
-            <Link
-              to="/products"
-              className="relative flex min-h-[320px] flex-col justify-between bg-[var(--brand-dark)] p-8 text-white"
-            >
-              <div>
-                <div className="text-[10px] font-bold uppercase tracking-[0.25em] text-white/50">
-                  Product Range
-                </div>
-                <h3 className="mt-4 font-display text-2xl font-semibold leading-tight">
-                  Explore our garment categories
-                </h3>
-                <p className="mt-4 text-sm leading-6 text-white/60">
-                  Knit, woven and selected specialist collections for men, women and kids.
-                </p>
+      <div className="invisible absolute left-1/2 top-full z-50 w-[min(900px,calc(100vw-2rem))] -translate-x-1/2 translate-y-2 opacity-0 shadow-[0_28px_70px_-32px_rgba(16,20,24,0.45)] transition-all duration-200 group-hover:visible group-hover:translate-y-0 group-hover:opacity-100">
+        <div className="grid overflow-hidden border border-neutral-200 bg-white lg:grid-cols-[0.85fr_2.15fr]">
+          <Link
+            to="/products"
+            className="flex min-h-[270px] flex-col justify-between bg-[#303030] p-7 text-white"
+          >
+            <div>
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-white/45">
+                Product Range
               </div>
-              <div className="inline-flex items-center gap-2 text-sm font-bold text-[var(--brand-primary)]">
-                View All Products <ArrowUpRight className="h-4 w-4" />
-              </div>
-            </Link>
-            <div className="grid grid-cols-3 gap-0 p-7">
-              {groups.map((group) => (
-                <div key={group.to} className="border-r border-neutral-100 px-5 last:border-r-0">
-                  <Link to={group.to} className="group/heading inline-flex items-center gap-2">
-                    <span className="text-base font-bold uppercase text-neutral-950 transition group-hover/heading:text-[var(--brand-primary)]">
-                      {group.label}
-                    </span>
-                  </Link>
-                  <p className="mt-2 min-h-[48px] text-xs leading-5 text-neutral-500">
-                    {group.note}
-                  </p>
-                  {group.subcategories.length > 0 && (
-                    <div className="mt-3 space-y-1">
-                      {group.subcategories.map((sub) => (
-                        <div key={sub.to} className="border-b border-neutral-100 py-2">
-                          <Link to={sub.to} className="text-xs font-black uppercase tracking-wide text-neutral-800 transition hover:text-[var(--brand-primary)]">{sub.label}</Link>
-                          {sub.children.slice(0, 4).map((leaf) => <Link key={leaf.to} to={leaf.to} className="mt-1 block text-[11px] leading-4 text-neutral-500 hover:text-[var(--brand-primary)]">{leaf.label}</Link>)}
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                  <div className="mt-4 space-y-1">
-                    {group.items.slice(0, 6).map((item) => (
-                      <Link
-                        key={item.to}
-                        to={item.to}
-                        className="block border-b border-neutral-100 py-1.5 text-xs font-semibold leading-5 text-neutral-500 transition hover:text-[var(--brand-primary)]"
-                      >
-                        {item.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              ))}
+              <h3 className="mt-4 text-2xl font-black leading-tight">
+                Export-ready garment categories
+              </h3>
+              <p className="mt-4 text-sm leading-6 text-white/60">
+                Knit, woven, flat knit and selected accessories sourced through Bangladesh's
+                manufacturing network.
+              </p>
             </div>
+            <span className="text-sm font-black text-[var(--brand-primary)]">
+              View All Products
+            </span>
+          </Link>
+          <div className="grid max-h-[420px] grid-cols-2 gap-y-6 overflow-y-auto p-6 md:grid-cols-3 lg:grid-cols-4">
+            {productMegaGroups.map((group) => (
+              <div key={group.to} className="border-r border-neutral-100 px-4 last:border-r-0">
+                <Link
+                  to={group.to}
+                  className="text-base font-black uppercase text-neutral-800 transition hover:text-[var(--brand-primary)]"
+                >
+                  {group.label}
+                </Link>
+                <div className="mt-4 space-y-1">
+                  {group.items.map((item) => (
+                    <Link
+                      key={item.to}
+                      to={item.to}
+                      className="block border-b border-neutral-100 py-1.5 text-xs font-bold leading-5 text-neutral-500 transition hover:text-[var(--brand-primary)]"
+                    >
+                      {item.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
       </div>
@@ -271,7 +215,7 @@ function MobileMenuLink({
     <NavLink
       to={to}
       onClick={onClick}
-      className="flex min-h-11 items-center justify-between rounded-xl px-3 text-sm font-bold text-neutral-700 transition hover:bg-neutral-50 hover:text-[var(--brand-primary)]"
+      className="flex min-h-11 items-center justify-between border-b border-neutral-100 px-4 text-sm font-bold text-neutral-700 last:border-0"
     >
       {label}
       <ChevronRight className="h-4 w-4 text-neutral-300" />
@@ -281,160 +225,109 @@ function MobileMenuLink({
 
 export function SiteHeader() {
   const [open, setOpen] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
   const tree = useHeaderTree();
   const { data: settings } = useSettings();
-  const { data: productCategories = [] } = useCategories();
-  const location = useLocation();
-  const isHome = location.pathname === "/";
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 60);
-    onScroll();
-    window.addEventListener("scroll", onScroll);
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  const transparent = isHome && !scrolled && !open;
-  const otherItems = tree.filter((i) => i.url !== "/products");
   const siteName = settings?.siteName || "Fashion Source BD";
   const logoSrc = settings?.logo || fsLogoTransparent;
+  const closeMenu = () => setOpen(false);
 
   return (
-    <header
-      className="fixed inset-x-0 top-0 z-50 px-4 py-3 transition-all duration-500 sm:px-6"
-    >
-      <div
-        className={`mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full border px-4 py-2.5 shadow-[0_18px_60px_-34px_rgba(16,20,24,0.55)] backdrop-blur-xl transition-all duration-500 sm:px-5 ${
-          transparent
-            ? "border-white/55 bg-white/[0.88]"
-            : "border-neutral-200/75 bg-white/[0.92]"
-        }`}
-      >
-        <Link to="/" className="flex min-w-0 items-center">
-          <span className="flex h-[60px] w-[250px] shrink-0 items-center overflow-hidden sm:h-[68px] sm:w-[290px]">
+    <>
+      <div className="bg-[var(--brand-primary)] text-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-center px-4 py-2 text-center text-[11px] font-bold sm:px-5 sm:text-xs">
+          Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh
+        </div>
+      </div>
+
+      <header className="border-b border-neutral-200 bg-white">
+        <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-4 sm:px-5 lg:gap-8 lg:py-5">
+          <Link
+            to="/"
+            className="flex h-16 w-[280px] max-w-[72vw] items-center sm:h-20 sm:w-[390px] sm:max-w-[52vw]"
+          >
             <img
               src={logoSrc}
               alt={siteName}
               className="h-full w-full object-contain object-left"
             />
-          </span>
-        </Link>
+          </Link>
 
-        <nav className="hidden min-w-0 flex-1 justify-center lg:flex lg:items-center lg:gap-5 xl:gap-7">
-          {tree.map((item) =>
-            item.url === "/products" ? (
-              <ProductsMegaMenu key={item.id} dark={false} />
-            ) : item.children.length > 0 ? (
-              <Dropdown key={item.id} label={item.label} items={item.children} dark={false} />
-            ) : (
-              <NavLink
-                key={item.id}
-                to={item.url}
-                className="whitespace-nowrap py-5 text-[11px] font-bold uppercase tracking-[0.11em] text-neutral-700 transition-colors hover:text-[var(--brand-dark)]"
-              >
-                {item.label}
-              </NavLink>
-            ),
-          )}
-        </nav>
+          <nav className="hidden items-center gap-7 lg:flex">
+            {tree.map((item) =>
+              item.url === "/products" ? (
+                <ProductsMegaMenu key={item.id} />
+              ) : item.children.length > 0 ? (
+                <Dropdown key={item.id} label={item.label} items={item.children} />
+              ) : (
+                <NavLink
+                  key={item.id}
+                  to={item.url}
+                  className="whitespace-nowrap py-7 text-xs font-black uppercase tracking-wide text-neutral-600 transition hover:text-[var(--brand-primary)]"
+                >
+                  {item.label}
+                </NavLink>
+              ),
+            )}
+          </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <PremiumButton
-            to="/contact"
-            variant="primary"
-            className="whitespace-nowrap px-5 py-3 text-xs shadow-[0_14px_34px_-16px_rgba(55,172,78,0.75)]"
+          <button
+            type="button"
+            onClick={() => setOpen((current) => !current)}
+            className="flex h-11 w-11 shrink-0 items-center justify-center border border-neutral-200 bg-white text-neutral-800 transition hover:border-[var(--brand-primary)] hover:text-[var(--brand-primary)] lg:hidden"
+            aria-label={open ? "Close menu" : "Open menu"}
+            aria-expanded={open}
           >
-            Get a Quote
-          </PremiumButton>
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
         </div>
 
-        <button
-          className="flex h-11 w-11 items-center justify-center rounded-xl border border-neutral-200 bg-neutral-50 text-neutral-800 transition lg:hidden"
-          onClick={() => setOpen(!open)}
-          aria-label="Menu"
-        >
-          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-        </button>
-      </div>
+        {open && (
+          <div className="border-t border-neutral-200 bg-white lg:hidden">
+            <div className="mx-auto max-h-[calc(100vh-112px)] max-w-7xl overflow-y-auto px-4 py-4">
+              <Link
+                to="/products"
+                onClick={closeMenu}
+                className="mb-4 flex items-center justify-between bg-[#303030] px-4 py-4 text-sm font-black uppercase tracking-wide text-white"
+              >
+                Our Products
+                <ChevronRight className="h-4 w-4" />
+              </Link>
 
-      {open && (
-        <div className="border-t border-neutral-200 bg-white shadow-[0_24px_60px_rgba(15,23,42,0.16)] lg:hidden">
-          <div className="max-h-[calc(100vh-88px)] overflow-y-auto px-5 py-5">
-            <Link
-              to="/products"
-              onClick={() => setOpen(false)}
-              className="mb-4 flex items-center justify-between rounded-xl bg-[var(--brand-dark)] px-4 py-4 text-white"
-            >
-              <span>
-                <span className="block text-[10px] font-black uppercase tracking-[0.18em] text-white/50">
-                  Catalogue
-                </span>
-                <span className="mt-1 block text-base font-black">View All Products</span>
-              </span>
-              <ArrowUpRight className="h-5 w-5" />
-            </Link>
-
-            <div className="mb-5 space-y-3">
-              {productCategories
-                .filter((category) => category.status === "active" && !category.parent)
-                .sort((a, b) => a.sort_order - b.sort_order)
-                .map((division) => (
-                  <div key={division.id} className="rounded-xl border border-neutral-200 bg-white p-2">
-                    <MobileMenuLink to={`/products/${division.slug}`} label={division.title} onClick={() => setOpen(false)} />
-                    <div className="flex flex-wrap gap-2 px-3 pb-2">
-                      {productCategories
-                        .filter((category) => category.parent === division.id && category.status === "active")
-                        .sort((a, b) => a.sort_order - b.sort_order)
-                        .map((audience) => (
-                          <Link key={audience.id} to="/products/$category" params={{ category: audience.slug }} onClick={() => setOpen(false)} className="rounded-full bg-neutral-100 px-3 py-1.5 text-[11px] font-black text-neutral-600">
-                            {audience.title}
-                          </Link>
-                        ))}
-                    </div>
-                  </div>
-                ))}
-            </div>
-
-            <div className="space-y-5">
-              {otherItems.map((item) => (
-                <div key={item.id}>
-                  <div className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-neutral-400">
-                    {item.label}
-                  </div>
-                  <div className="rounded-xl border border-neutral-200 bg-white p-1">
-                    {item.children.length > 0 ? (
-                      item.children.map((it) => (
-                        <MobileMenuLink
-                          key={it.id}
-                          to={it.url}
-                          label={it.label}
-                          onClick={() => setOpen(false)}
-                        />
-                      ))
+              <div className="space-y-4">
+                {tree
+                  .filter((item) => item.url !== "/products")
+                  .map((item) =>
+                    item.children.length > 0 ? (
+                      <div key={item.id}>
+                        <div className="mb-2 text-[11px] font-black uppercase tracking-[0.18em] text-neutral-400">
+                          {item.label}
+                        </div>
+                        <div className="border border-neutral-200">
+                          {item.children.map((child) => (
+                            <MobileMenuLink
+                              key={child.id}
+                              to={child.url}
+                              label={child.label}
+                              onClick={closeMenu}
+                            />
+                          ))}
+                        </div>
+                      </div>
                     ) : (
-                      <MobileMenuLink
-                        to={item.url}
-                        label={item.label}
-                        onClick={() => setOpen(false)}
-                      />
-                    )}
-                  </div>
-                </div>
-              ))}
+                      <div key={item.id} className="border border-neutral-200">
+                        <MobileMenuLink
+                          to={item.url}
+                          label={item.label}
+                          onClick={closeMenu}
+                        />
+                      </div>
+                    ),
+                  )}
+              </div>
             </div>
-
-            <PremiumButton
-              to="/contact"
-              variant="primary"
-              className="mt-6 w-full"
-              onClick={() => setOpen(false)}
-            >
-              Get a Quote
-            </PremiumButton>
           </div>
-        </div>
-      )}
-    </header>
+        )}
+      </header>
+    </>
   );
 }

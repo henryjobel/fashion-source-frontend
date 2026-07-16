@@ -158,6 +158,13 @@ const footerQuickLinks = [
   { label: "Contact", to: "/contact" },
 ];
 
+const footerContact = {
+  phones: ["+8801613341001", "+8801686841325"],
+  email: "info@fashionsource-bd.com",
+  hours: ["Sun - Thu: 10:00 am - 07:00 pm", "Fri: 04:00 pm - 08:00 pm", "Sat: Weekly Holiday"],
+  address: "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh",
+};
+
 function ClassicDropdown({
   label,
   items,
@@ -616,11 +623,6 @@ function ClassicFooter() {
   const about =
     settings?.footerAbout ||
     "A 100% export oriented garments buying house connecting buyers with compliant manufacturing partners across Bangladesh.";
-  const email = settings?.email || "info@fashionsourcebd.com";
-  const phone = settings?.phone || "+880 1711-000000";
-  const address =
-    settings?.address || "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh";
-  const businessHours = settings?.businessHours || "Sunday - Thursday, 9:00 AM - 6:00 PM";
   const copyright =
     settings?.footerCopyright || `Copyrights 1998 - ${new Date().getFullYear()} (c) ${siteName}`;
   const subsidiaryLabel = settings?.footerSubsidiaryLabel || "";
@@ -661,27 +663,46 @@ function ClassicFooter() {
         <div>
           <h3 className="text-sm font-black uppercase tracking-[0.18em] text-white/45">Contact</h3>
           <div className="mt-5 space-y-4 text-sm font-bold leading-6 text-white/75">
-            <a
-              href={`tel:${phone.replace(/\s+/g, "")}`}
-              className="flex gap-3 transition hover:text-[var(--brand-primary)]"
-            >
+            <div className="flex gap-3">
               <Phone className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
-              <span>{phone}</span>
-            </a>
+              <div>
+                <div className="text-white/90">Call</div>
+                {footerContact.phones.map((phone) => (
+                  <a
+                    key={phone}
+                    href={`tel:${phone}`}
+                    className="block transition hover:text-[var(--brand-primary)]"
+                  >
+                    {phone}
+                  </a>
+                ))}
+              </div>
+            </div>
             <a
-              href={`mailto:${email}`}
+              href={`mailto:${footerContact.email}`}
               className="flex gap-3 transition hover:text-[var(--brand-primary)]"
             >
               <Mail className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
-              <span>{email}</span>
+              <span>
+                <span className="block text-white/90">Email</span>
+                {footerContact.email}
+              </span>
             </a>
             <div className="flex gap-3">
-              <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
-              <span>{address}</span>
+              <Clock className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <div>
+                <div className="text-white/90">Office Hours</div>
+                {footerContact.hours.map((line) => (
+                  <div key={line}>{line}</div>
+                ))}
+              </div>
             </div>
             <div className="flex gap-3">
-              <Clock className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
-              <span>{businessHours}</span>
+              <MapPin className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
+              <span>
+                <span className="block text-white/90">Address</span>
+                {footerContact.address}
+              </span>
             </div>
           </div>
         </div>

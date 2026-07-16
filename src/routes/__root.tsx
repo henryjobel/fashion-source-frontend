@@ -213,10 +213,7 @@ function SiteShell() {
       ) : (
         <>
           {!isAdmin && !isHome && <SiteHeader />}
-          {/* SiteHeader is fixed/overlaid; the homepage hero manages its own top
-              spacing to sit under the transparent header, every other page needs
-              padding here so content isn't hidden behind the solid header bar. */}
-          <main className={!isAdmin && !isHome ? "pt-20" : undefined}>
+          <main>
             <Outlet />
           </main>
           {!isAdmin && !isHome && <SiteFooter />}

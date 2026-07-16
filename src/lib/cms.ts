@@ -36,7 +36,7 @@ export type CmsSettings = {
 export const defaultSettings: CmsSettings = {
   siteName: "Fashion Source BD",
   email: "info@fashionsource-bd.com",
-  phone: "+8801613341001, +880168684132",
+  phone: "+8801613341001, +8801686841325",
   address: "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh",
   primaryColor: "#17b86a",
   seoTitle: "Fashion Source BD - Export Oriented Garments Buying House",
