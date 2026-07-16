@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, ArrowRight, FileText, Package } from "lucide-react";
 import { useMemo } from "react";
 
 import { PageHero } from "@/components/page-hero";
@@ -40,6 +40,7 @@ function ProductsCategory() {
   const directProducts = products.filter((product) => product.category_id === category?.id);
   const descendantProducts = products.filter((product) => descendantIds.has(product.category_id || ""));
   const title = category?.title ?? params.category.replaceAll("-", " ");
+  const showCategoryCards = !category?.parent;
 
   return (
     <section className="bg-white">
@@ -70,6 +71,85 @@ function ProductsCategory() {
                 <div className="space-y-3 p-5"><div className="h-7 w-3/5 animate-pulse rounded-lg bg-neutral-200" /><div className="h-3.5 animate-pulse rounded bg-neutral-100" /><div className="h-3.5 w-4/5 animate-pulse rounded bg-neutral-100" /><div className="mt-5 h-10 w-24 animate-pulse rounded-full bg-neutral-200" /></div>
               </div>
             ))}
+          </div>
+        )}
+
+        {!isLoading && showCategoryCards && children.length > 0 && (
+          <div className="mb-16">
+            <h2 className="font-display text-3xl font-semibold text-neutral-950">
+              Categories
+            </h2>
+            <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {children.map((child) => {
+                const nestedCategories = categories
+                  .filter((item) => item.status === "active" && item.parent === child.id)
+                  .sort((a, b) => a.sort_order - b.sort_order);
+                const childProductCount = products.filter((p) => p.category_id === child.id).length;
+                const count = nestedCategories.length || childProductCount;
+
+                return (
+                  <article
+                    key={child.id}
+                    className="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-neutral-200 bg-[#fafaf8] transition hover:-translate-y-1 hover:border-[var(--brand-primary)] hover:shadow-lg"
+                  >
+                    <ImageWithSkeleton
+                      src={getCategoryImage(child.slug, category?.slug)}
+                      alt={`${child.title} collection`}
+                      className="aspect-[4/3] bg-[#e9e5e0]"
+                      imageClassName="object-cover object-top group-hover:scale-105"
+                    />
+                    <div className="flex flex-1 flex-col p-5">
+                      <div className="text-[10px] font-black uppercase tracking-[0.22em] text-[var(--brand-primary)]">
+                        {count} categories / products
+                      </div>
+                      <h3 className="mt-3 font-display text-2xl font-semibold leading-tight text-neutral-950 lg:text-3xl">
+                        {child.title}
+                      </h3>
+                      <p className="mt-2 text-sm leading-5 text-neutral-600">{child.intro}</p>
+                      {nestedCategories.length > 0 && (
+                        <div className="mt-4 flex-1 space-y-1.5">
+                          {nestedCategories.slice(0, 5).map((nested) => (
+                            <Link
+                              key={nested.id}
+                              to="/products/$category"
+                              params={{ category: nested.slug }}
+                              className="flex items-center justify-between rounded-xl bg-white px-3 py-1.5 text-[11px] font-bold text-neutral-700 transition hover:text-[var(--brand-primary)]"
+                            >
+                              {nested.title}
+                              <ArrowRight className="h-3.5 w-3.5 text-neutral-300" />
+                            </Link>
+                          ))}
+                          {nestedCategories.length > 5 && (
+                            <p className="px-3 text-xs font-bold text-neutral-400">
+                              + {nestedCategories.length - 5} more categories
+                            </p>
+                          )}
+                        </div>
+                      )}
+                      <div className="mt-5 flex flex-wrap gap-2">
+                        <Link
+                          to="/products/$category"
+                          params={{ category: child.slug }}
+                          className="inline-flex items-center gap-2 rounded-full bg-[var(--brand-dark)] px-4 py-2.5 text-xs font-black text-white"
+                        >
+                          Explore <ArrowRight className="h-3.5 w-3.5" />
+                        </Link>
+                        {child.catalogue_url && (
+                          <a
+                            href={child.catalogue_url}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-2 rounded-full border border-neutral-300 px-4 py-2.5 text-xs font-black text-neutral-800"
+                          >
+                            <FileText className="h-3.5 w-3.5" /> View More
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                );
+              })}
+            </div>
           </div>
         )}
 
