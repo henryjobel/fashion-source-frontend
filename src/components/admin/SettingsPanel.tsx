@@ -1,14 +1,14 @@
-import { CheckCircle2, KeyRound, Save } from "lucide-react";
-import { useEffect, useState } from "react";
+import { CheckCircle2, KeyRound, Save, Upload } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 
 import { Field, inputCls } from "@/components/admin/shared";
 import type { ApiSettings } from "@/lib/api";
-import { useChangePassword, useSettings, useUpdateSettings } from "@/lib/queries";
+import { useChangePassword, useSettings, useUpdateSettings, useUploadMedia } from "@/lib/queries";
 
 type FieldMeta = {
   key: string;
   label: string;
-  type?: "text" | "email" | "color" | "textarea" | "toggle" | "password";
+  type?: "text" | "email" | "color" | "textarea" | "toggle" | "password" | "image";
 };
 
 const groups: { id: string; label: string; fields: FieldMeta[] }[] = [
@@ -17,9 +17,9 @@ const groups: { id: string; label: string; fields: FieldMeta[] }[] = [
     label: "General",
     fields: [
       { key: "siteName", label: "Website Name" },
-      { key: "logo", label: "Logo URL" },
-      { key: "favicon", label: "Favicon URL" },
-      { key: "footerLogo", label: "Footer Logo URL" },
+      { key: "logo", label: "Logo", type: "image" },
+      { key: "favicon", label: "Favicon", type: "image" },
+      { key: "footerLogo", label: "Footer Logo", type: "image" },
       { key: "email", label: "Contact Email", type: "email" },
       { key: "phone", label: "Phone Number" },
       { key: "address", label: "Office Address", type: "textarea" },
@@ -149,6 +149,49 @@ function SettingInput({
       onChange={(e) => onChange(e.target.value)}
       className={inputCls}
     />
+  );
+}
+
+function ImageSettingInput({ value, onChange }: { value: string; onChange: (v: string) => void }) {
+  const uploadMut = useUploadMedia();
+  const fileRef = useRef<HTMLInputElement>(null);
+
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const result = await uploadMut.mutateAsync({ file, altText: file.name });
+    onChange(result.data.secure_url);
+    if (fileRef.current) fileRef.current.value = "";
+  };
+
+  return (
+    <div className="flex items-center gap-3">
+      {value && (
+        <img
+          src={value}
+          alt=""
+          className="h-10 w-10 flex-shrink-0 rounded border border-neutral-200 object-contain"
+        />
+      )}
+      <input
+        value={value ?? ""}
+        onChange={(e) => onChange(e.target.value)}
+        placeholder="Paste an image URL or upload one"
+        className={`flex-1 ${inputCls}`}
+      />
+      <label className="inline-flex h-10 flex-shrink-0 cursor-pointer items-center gap-2 rounded-md border border-neutral-200 px-3 text-xs font-black text-neutral-700 hover:border-[var(--brand-green)] hover:text-[var(--brand-green)]">
+        <Upload className="h-3.5 w-3.5" />
+        {uploadMut.isPending ? "Uploading…" : "Upload"}
+        <input
+          ref={fileRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handleUpload}
+          disabled={uploadMut.isPending}
+        />
+      </label>
+    </div>
   );
 }
 
@@ -300,14 +343,23 @@ export function SettingsPanel({ savePulse }: { savePulse: () => void }) {
           {activeGroup.fields.map((meta) => (
             <label
               key={meta.key}
-              className={meta.type === "textarea" ? "block sm:col-span-2" : "block"}
+              className={
+                meta.type === "textarea" || meta.type === "image" ? "block sm:col-span-2" : "block"
+              }
             >
               <span className="mb-1.5 block text-sm font-black text-neutral-700">{meta.label}</span>
-              <SettingInput
-                meta={meta}
-                value={local[meta.key] ?? ""}
-                onChange={(v) => setLocal((s) => ({ ...s, [meta.key]: v }))}
-              />
+              {meta.type === "image" ? (
+                <ImageSettingInput
+                  value={local[meta.key] ?? ""}
+                  onChange={(v) => setLocal((s) => ({ ...s, [meta.key]: v }))}
+                />
+              ) : (
+                <SettingInput
+                  meta={meta}
+                  value={local[meta.key] ?? ""}
+                  onChange={(v) => setLocal((s) => ({ ...s, [meta.key]: v }))}
+                />
+              )}
             </label>
           ))}
         </div>

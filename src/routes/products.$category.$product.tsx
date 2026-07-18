@@ -1,9 +1,9 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
-// Canonical product URL is /product/$product — this legacy /products/$category/$product
-// path is kept only to redirect any old/indexed links to the live, API-backed page.
+// Product detail pages are disabled on the client, so any old/indexed
+// product links are sent back to the relevant category listing instead.
 export const Route = createFileRoute("/products/$category/$product")({
   loader: ({ params }) => {
-    throw redirect({ to: "/product/$product", params: { product: params.product } });
+    throw redirect({ to: "/products/$category", params: { category: params.category } });
   },
 });

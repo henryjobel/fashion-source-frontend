@@ -39,7 +39,7 @@ function Page() {
     },
     {
       name: "Md. Abdul Korim",
-      role: "Managing Director & CEO",
+      role: "Managing Director",
       initials: "AK",
       email: "info@fashionsource-bd.com",
     },

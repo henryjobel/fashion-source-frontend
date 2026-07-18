@@ -158,10 +158,10 @@ function ProductsCategory() {
             <h2 className="font-display text-3xl font-semibold text-neutral-950">{children.length ? "Featured products" : `${title} products`}</h2>
             <div className="mt-8 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {[...directProducts, ...descendantProducts].map((product) => (
-                <Link key={product.id} to="/product/$product" params={{ product: product.slug }} className="group overflow-hidden rounded-3xl border border-neutral-200 bg-white transition hover:-translate-y-1 hover:shadow-xl">
-                  <ImageWithSkeleton src={product.image_url || getCategoryImage(product.category_slug, category?.slug)} alt={product.name} className="aspect-[4/5]" imageClassName="object-cover group-hover:scale-105" />
+                <div key={product.id} className="overflow-hidden rounded-3xl border border-neutral-200 bg-white">
+                  <ImageWithSkeleton src={product.image_url || getCategoryImage(product.category_slug, category?.slug)} alt={product.name} className="aspect-[4/5]" imageClassName="object-cover" />
                   <div className="p-5"><div className="text-[10px] font-black uppercase tracking-wider text-[var(--brand-primary)]">{product.category_title}</div><h3 className="mt-2 font-display text-lg font-semibold">{product.short_name || product.name}</h3></div>
-                </Link>
+                </div>
               ))}
             </div>
           </div>
