@@ -52,9 +52,6 @@ export function PageHero({
       className="relative overflow-hidden bg-[var(--brand-dark)] bg-cover bg-center px-6 pb-16 pt-24 text-white sm:px-8 sm:pt-28"
       style={{ backgroundImage: `url(${heroImage})` }}
     >
-      <div className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(8,17,16,0.92)_0%,rgba(8,17,16,0.78)_48%,rgba(8,17,16,0.36)_100%)]" />
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(55,172,78,0.16),transparent_55%)]" />
-      <div className="pointer-events-none absolute -right-24 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-[var(--brand-primary)]/10 blur-3xl" />
       <div className="relative mx-auto max-w-7xl">
         <Reveal className="max-w-3xl">
           <SectionEyebrow tone="dark">{cmsSubtitle}</SectionEyebrow>

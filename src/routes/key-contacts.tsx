@@ -20,13 +20,13 @@ function Page() {
       name: "Tanjang Talukder",
       role: "Director",
       initials: "TT",
-      email: "info@fashionsource-bd.com",
+      email: "tanjang@fashionsource-bd.com",
     },
     {
       name: "Md. Abdul Korim",
       role: "Managing Director",
       initials: "AK",
-      email: "info@fashionsource-bd.com",
+      email: "korim@fashionsource-bd.com",
     },
   ];
 
