@@ -36,7 +36,7 @@ export type CmsSettings = {
 export const defaultSettings: CmsSettings = {
   siteName: "Fashion Source BD",
   email: "info@fashionsource-bd.com",
-  phone: "+8801613341001, +8801686841325",
+  phone: "01611937736 - Md Abdul Korim, 01947429665 - Tanjang Talukder (Director)",
   address: "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh",
   primaryColor: "#17b86a",
   seoTitle: "Fashion Source BD - Export Oriented Garments Buying House",
@@ -955,9 +955,9 @@ export const defaultCmsPages: CmsPage[] = [
         label: "Leadership People",
         type: "cards",
         fields: [
-          field("person1Name", "Person 1 Name", "MD. Abu Sayed"),
+          field("person1Name", "Person 1 Name", "Tanjang Talukder"),
           field("person1Role", "Person 1 Role", "Director"),
-          field("person1Initials", "Person 1 Initials", "AS"),
+          field("person1Initials", "Person 1 Initials", "TT"),
           field("person1Email", "Person 1 Email", "info@fashionsource-bd.com"),
           field("person2Name", "Person 2 Name", "Md. Abdul Korim"),
           field("person2Role", "Person 2 Role", "Managing Director & CEO"),

@@ -2,8 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { PageHero } from "@/components/page-hero";
 import { Linkedin, Mail, Phone } from "lucide-react";
 import { Reveal, RevealGroup } from "@/components/premium/motion";
-import { PremiumButton, SectionEyebrow } from "@/components/premium/ui";
-import { getField, useCmsPage } from "@/lib/cms";
+import { PremiumButton } from "@/components/premium/ui";
 
 export const Route = createFileRoute("/key-contacts")({
   head: () => ({
@@ -16,25 +15,11 @@ export const Route = createFileRoute("/key-contacts")({
 });
 
 function Page() {
-  const page = useCmsPage("/key-contacts");
-  const introHeading = getField(
-    page,
-    "leadership-intro",
-    "heading",
-    "Reach the right team faster.",
-  );
-  const introBody = getField(
-    page,
-    "leadership-intro",
-    "body",
-    "For product development, sourcing, supplier or operational communication, these contacts help direct inquiries to the relevant department.",
-  );
-
   const people = [
     {
-      name: "MD. Abu Sayed",
+      name: "Tanjang Talukder",
       role: "Director",
-      initials: "AS",
+      initials: "TT",
       email: "info@fashionsource-bd.com",
     },
     {
@@ -54,16 +39,6 @@ function Page() {
       />
       <section className="bg-neutral-50 px-4 py-16">
         <div className="mx-auto max-w-7xl">
-          <Reveal className="mb-10 grid gap-8 rounded-[var(--radius-premium)] bg-white p-8 shadow-sm ring-1 ring-neutral-200 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
-            <div>
-              <SectionEyebrow>Leadership</SectionEyebrow>
-              <h2 className="mt-3 font-display text-3xl font-semibold text-[var(--brand-dark)]">
-                {introHeading}
-              </h2>
-            </div>
-            <p className="text-sm leading-7 text-neutral-600">{introBody}</p>
-          </Reveal>
-
           <RevealGroup className="grid gap-6 md:grid-cols-2" stagger={0.08}>
             {people.map((person, index) => (
               <article

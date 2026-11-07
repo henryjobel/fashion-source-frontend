@@ -89,8 +89,12 @@ function Contact() {
               <Phone className="mb-5 h-7 w-7 text-[var(--brand-primary)]" />
               <h2 className="font-display text-lg font-semibold text-[var(--brand-dark)]">Call</h2>
               <div className="mt-4 space-y-1 text-sm font-semibold text-neutral-600">
-                <div>+8801613341001</div>
-                <div>+8801686841325</div>
+                <a href="tel:+8801611937736" className="block hover:text-[var(--brand-primary)]">
+                  01611937736 - Md Abdul Korim
+                </a>
+                <a href="tel:+8801947429665" className="block hover:text-[var(--brand-primary)]">
+                  01947429665 - Tanjang Talukder (Director)
+                </a>
               </div>
             </div>
             <div className="rounded-[var(--radius-premium)] border border-neutral-200 bg-white p-7 shadow-sm">

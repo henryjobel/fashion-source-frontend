@@ -159,7 +159,7 @@ const footerQuickLinks = [
 ];
 
 const footerContact = {
-  phones: ["+8801613341001", "+8801686841325"],
+  phones: ["01611937736", "01947429665"],
   email: "info@fashionsource-bd.com",
   hours: ["Sun - Thu: 10:00 am - 07:00 pm", "Fri: 04:00 pm - 08:00 pm", "Sat: Weekly Holiday"],
   address: "Zila Parishad, Fatullah, Narayanganj-1400, Dhaka, Bangladesh",
@@ -667,13 +667,13 @@ function ClassicFooter() {
               <Phone className="mt-1 h-4 w-4 flex-shrink-0 text-[var(--brand-primary)]" />
               <div>
                 <div className="text-white/90">Call</div>
-                {footerContact.phones.map((phone) => (
+                {footerContact.phones.map((number) => (
                   <a
-                    key={phone}
-                    href={`tel:${phone}`}
+                    key={number}
+                    href={`tel:+88${number}`}
                     className="block transition hover:text-[var(--brand-primary)]"
                   >
-                    {phone}
+                    {number}
                   </a>
                 ))}
               </div>
